@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Usaid Khan - Creative Developer & Designer. Building digital experiences that matter.">
+    <meta name="keywords" content="web developer, designer, portfolio, frontend, usaid khan">
+    <meta name="author" content="Usaid Khan">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Usaid Khan - Creative Developer">
+    <meta property="og:description" content="Building digital experiences that matter">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://usaidkhan.dev">
+    
+    <title>Usaid Khan - Creative Developer</title>
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        'primary': '#6366f1',
+                        'secondary': '#8b5cf6',
+                        'accent': '#06b6d4',
+                        'neon': '#00ff88',
+                    },
+                    animation: {
+                        'gradient': 'gradient 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-inter bg-gray-900 text-white overflow-x-hidden">
+    <!-- Loading Screen -->
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900">
+        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 w-full z-40 transition-all duration-300 py-4">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div class="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                UK
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link text-gray-300 hover:text-white transition-colors">Home</a>
+                <a href="#about" class="nav-link text-gray-300 hover:text-white transition-colors">About</a>
+                <a href="#skills" class="nav-link text-gray-300 hover:text-white transition-colors">Skills</a>
+                <a href="#projects" class="nav-link text-gray-300 hover:text-white transition-colors">Projects</a>
+                <a href="#contact" class="nav-link text-gray-300 hover:text-white transition-colors">Contact</a>
+            </div>
+            
+            <!-- Theme Toggle -->
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-moon text-yellow-400"></i>
+                </button>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden absolute top-full left-0 w-full bg-gray-900/95 backdrop-blur-md border-t border-gray-800 hidden">
+            <div class="px-6 py-4 space-y-4">
+                <a href="#home" class="block text-gray-300 hover:text-white transition-colors">Home</a>
+                <a href="#about" class="block text-gray-300 hover:text-white transition-colors">About</a>
+                <a href="#skills" class="block text-gray-300 hover:text-white transition-colors">Skills</a>
+                <a href="#projects" class="block text-gray-300 hover:text-white transition-colors">Projects</a>
+                <a href="#contact" class="block text-gray-300 hover:text-white transition-colors">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Animated Background -->
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20"></div>
+            <canvas id="particles-canvas" class="absolute inset-0"></canvas>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
+            <div class="opacity-0 transform translate-y-12" data-animate="fade-in">
+                <p class="text-accent text-lg md:text-xl font-mono mb-4">Hello, I'm</p>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
+                    <span class="bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent">
+                        USAID KHAN
+                    </span>
+                </h1>
+                <p class="text-xl md:text-2xl lg:text-3xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    Creative Developer & Designer building 
+                    <span class="text-neon font-semibold">digital experiences</span> 
+                    that matter
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button class="hero-btn bg-gradient-to-r from-primary to-secondary px-8 py-4 rounded-full text-white font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25">
+                        View My Work
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    <a href="#contact" class="hero-btn-outline border-2 border-gray-600 px-8 py-4 rounded-full text-gray-300 font-semibold text-lg transition-all duration-300 hover:border-primary hover:text-primary">
+                        Get In Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div class="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-gradient-to-b from-primary to-transparent rounded-full mt-2 animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 opacity-0" data-animate="slide-up">
+                    About <span class="text-primary">Me</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto opacity-0" data-animate="slide-up" data-delay="200"></div>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Profile Image -->
+                <div class="relative group opacity-0" data-animate="fade-in" data-delay="300">
+                    <div class="relative w-80 h-80 mx-auto lg:w-96 lg:h-96">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-2xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300"></div>
+                        <div class="relative w-full h-full bg-gray-800 rounded-2xl overflow-hidden border border-gray-700">
+                            <div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+                                <i class="fas fa-user text-6xl text-gray-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- About Content -->
+                <div class="space-y-6 opacity-0" data-animate="slide-up" data-delay="400">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white">
+                        Crafting Digital Excellence
+                    </h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        I'm a passionate creative developer with a keen eye for design and a love for clean, efficient code. 
+                        I specialize in building modern web applications that not only look stunning but also deliver 
+                        exceptional user experiences.
+                    </p>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        When I'm not coding, you'll find me exploring the latest design trends, experimenting with new 
+                        technologies, or collaborating with creative minds to bring innovative ideas to life.
+                    </p>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-6 pt-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary">50+</div>
+                            <div class="text-gray-400">Projects</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-accent">3+</div>
+                            <div class="text-gray-400">Years</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-neon">100%</div>
+                            <div class="text-gray-400">Passion</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-gray-900">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 opacity-0" data-animate="slide-up">
+                    Skills & <span class="text-accent">Tools</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-accent to-secondary mx-auto opacity-0" data-animate="slide-up" data-delay="200"></div>
+            </div>
+            
+            <!-- Skills Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Skill items will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 opacity-0" data-animate="slide-up">
+                    Featured <span class="text-secondary">Projects</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-secondary to-primary mx-auto opacity-0" data-animate="slide-up" data-delay="200"></div>
+            </div>
+            
+            <!-- Projects Grid -->
+            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-900">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 opacity-0" data-animate="slide-up">
+                    Let's <span class="text-neon">Connect</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-neon to-primary mx-auto opacity-0" data-animate="slide-up" data-delay="200"></div>
+                <p class="text-gray-300 text-lg mt-6 opacity-0" data-animate="fade-in" data-delay="300">
+                    Ready to bring your next project to life? Let's create something amazing together.
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="opacity-0" data-animate="slide-up" data-delay="400">
+                    <form id="contact-form" class="space-y-6">
+                        <div class="relative">
+                            <input type="text" id="name" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-primary peer">
+                            <label for="name" class="absolute left-4 -top-2.5 text-primary text-sm transition-all peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-primary peer-focus:text-sm bg-gray-800 px-1">Name</label>
+                        </div>
+                        
+                        <div class="relative">
+                            <input type="email" id="email" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-primary peer">
+                            <label for="email" class="absolute left-4 -top-2.5 text-primary text-sm transition-all peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-primary peer-focus:text-sm bg-gray-800 px-1">Email</label>
+                        </div>
+                        
+                        <div class="relative">
+                            <textarea id="message" rows="5" required class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-primary peer resize-none"></textarea>
+                            <label for="message" class="absolute left-4 -top-2.5 text-primary text-sm transition-all peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-primary peer-focus:text-sm bg-gray-800 px-1">Message</label>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-primary to-secondary py-3 rounded-lg text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25">
+                            Send Message
+                            <i class="fas fa-paper-plane ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Contact Info -->
+                <div class="space-y-8 opacity-0" data-animate="slide-up" data-delay="500">
+                    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-white">Get in Touch</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-envelope text-primary"></i>
+                                <span class="text-gray-300">usaidk.tech@gmail.com</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fab fa-linkedin text-primary"></i>
+                                <a href="https://www.linkedin.com/in/tousaidkhan" target="_blank" class="text-gray-300 hover:text-primary transition-colors">LinkedIn Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Links -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-white">Follow Me</h3>
+                        <div class="flex space-x-4">
+                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-primary transition-all duration-300">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-blue-600 transition-all duration-300">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-pink-600 transition-all duration-300">
+                                <i class="fab fa-dribbble"></i>
+                            </a>
+                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-red-600 transition-all duration-300">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800 py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                © 2024 Usaid Khan. Designed & Built with 
+                <span class="text-red-500">♥</span> 
+                and lots of <span class="text-primary">coffee</span>.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
