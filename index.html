@@ -162,16 +162,26 @@
             
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <!-- Profile Image -->
-                <div class="relative group opacity-0" data-animate="fade-in" data-delay="300">
-                    <div class="relative w-80 h-80 mx-auto lg:w-96 lg:h-96">
-                        <div class="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-2xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300"></div>
-                        <div class="relative w-full h-full bg-gray-800 rounded-2xl overflow-hidden border border-gray-700">
-                            <div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
-                                <i class="fas fa-user text-6xl text-gray-600"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="relative group opacity-0" data-animate="fade-in" data-delay="300">
+  <div class="relative w-80 h-80 mx-auto lg:w-96 lg:h-96">
+    
+    <!-- Glow background -->
+    <div class="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-2xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300"></div>
+    
+    <!-- Image container -->
+    <div class="relative w-full h-full bg-gray-800 rounded-2xl overflow-hidden border border-gray-700">
+      <div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+        
+        <!-- Your actual image -->
+        <img src="images/blackshirt.jpg" 
+             alt="Profile Image" 
+             class="w-full h-full object-cover" />
+             
+      </div>
+    </div>
+  </div>
+</div>
+
                 
                 <!-- About Content -->
                 <div class="space-y-6 opacity-0" data-animate="slide-up" data-delay="400">
@@ -191,11 +201,11 @@
                     <!-- Stats -->
                     <div class="grid grid-cols-3 gap-6 pt-6">
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-primary">50+</div>
+                            <div class="text-3xl font-bold text-primary">20+</div>
                             <div class="text-gray-400">Projects</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-accent">3+</div>
+                            <div class="text-3xl font-bold text-accent">1+</div>
                             <div class="text-gray-400">Years</div>
                         </div>
                         <div class="text-center">
