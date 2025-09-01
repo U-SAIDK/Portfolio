@@ -274,7 +274,8 @@ function initSkills() {
         { name: 'CSS3', icon: 'fab fa-css3-alt', level: 90 },
         { name: 'JavaScript', icon: 'fab fa-js', level: 88 },
         { name: 'Python', icon: 'fab fa-python', level: 85 },
-        
+        { name: 'Wordpress Expertise', icon: 'fab fa-wordpress', level: 85 },
+
         // Tools & Technologies
         { name: 'GitHub', icon: 'fab fa-github', level: 92 },
         { name: 'REST APIs', icon: 'fas fa-code', level: 88 },
@@ -283,7 +284,7 @@ function initSkills() {
         
         // AI & Automation
         { name: 'LangChain', icon: 'fas fa-robot', level: 88 },
-        { name: 'N8N', icon: 'fas fa-cogs', level: 92 },
+        { name: 'Ai Tools ', icon: 'fas fa-cogs', level: 92 },
         { name: 'LLM/AI', icon: 'fas fa-brain', level: 85 },
         { name: 'RAG', icon: 'fas fa-database', level: 82 },
         
@@ -341,7 +342,7 @@ function initProjects() {
         {
             title: 'Google Maps Scraper (API-less)',
             description: 'Created a fully functional Google Maps scraper without using any APIs, utilizing complex custom logic to extract and customize business data.',
-            technologies: ['Python', 'Custom Logic', 'Data Extraction'],
+            technologies: ['Python', 'Custom Logic', 'Data Extraction' , 'Lead Generation'],
             image: 'fas fa-map-marked-alt',
             link: '#',
             github: '#'
@@ -355,7 +356,23 @@ function initProjects() {
             github: '#'
         },
         {
-            title: 'Chat with Documents',
+            title: ' Form Automation & Notification',
+            description: 'Automated Form Handling Automation with Email & Slack',
+            technologies: ['Python', 'Custom Logic', 'Data Extraction'],
+            image: 'fas fa-map-marked-alt',
+            link: '#',
+            github: '#'
+        },
+        {
+            title: 'Chat with Documents/Custom Slack Bot',
+            description: 'Smart document chat system using audio transcription and Qdrant Vector Store for AI-based Q&A capabilities.',
+            technologies: ['Qdrant', 'AI', 'Transcription', 'Vector Store' , 'Embedding'],
+            image: 'fas fa-comments',
+            link: '#',
+            github: '#'
+        },
+        {
+            title: 'CRM Handler',
             description: 'Smart document chat system using audio transcription and Qdrant Vector Store for AI-based Q&A capabilities.',
             technologies: ['Qdrant', 'AI', 'Transcription', 'Vector Store'],
             image: 'fas fa-comments',
@@ -365,15 +382,23 @@ function initProjects() {
         {
             title: 'Traffic Management Website',
             description: 'Responsive traffic management website built as Frontend Engineer with backend team collaboration.',
-            technologies: ['HTML', 'CSS', 'JavaScript'],
+            technologies: ['HTML', 'CSS', 'JavaScript' , 'PHP'],
+            image: 'fas fa-traffic-light',
+            link: '#',
+            github: '#'
+        },
+        {
+            title: 'Dynamic Portfolio Website',
+            description: 'Responsive and Modern portfolio website with stunning UI/UX and features.',
+            technologies: ['HTML', 'CSS', 'JavaScript' , 'Typescript' , 'TailwindCSS' , 'React' ],
             image: 'fas fa-traffic-light',
             link: '#',
             github: '#'
         },
         {
             title: 'AI Chat Model',
-            description: 'Built an AI Chatbot using n8n and OpenAI for real-time conversational use-cases.',
-            technologies: ['n8n', 'OpenAI', 'Chatbot', 'AI'],
+            description: 'Ai Chat Model which can be intgrated into any website.',
+            technologies: ['OpenAI', 'Chatbot', 'AI'],
             image: 'fas fa-robot',
             link: '#',
             github: '#'
@@ -381,7 +406,7 @@ function initProjects() {
         {
             title: 'Telegram Chatbot',
             description: 'Fully functional Telegram Chatbot for automated user interactions and service handling.',
-            technologies: ['Telegram API', 'n8n', 'Automation'],
+            technologies: ['Full Customization', 'Query Solving', 'Automation'],
             image: 'fab fa-telegram',
             link: '#',
             github: '#'
