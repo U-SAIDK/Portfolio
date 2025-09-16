@@ -118,12 +118,63 @@
         <!-- Hero Content -->
         <div class="relative z-10 text-center max-w-4xl mx-auto px-6">
             <div class="opacity-0 transform translate-y-12" data-animate="fade-in">
-                <p class="text-accent text-lg md:text-xl font-mono mb-4">Hello, I'm</p>
+                <p class="text-accent text-lg md:text-xl font-mono mb-4 wave">
+  <span>H</span>
+  <span>e</span>
+  <span>l</span>
+  <span>l</span>
+  <span>o</span>
+  <span>,</span>
+  <span>&nbsp;</span>
+  <span>I</span>
+  <span>'</span>
+  <span>m</span>
+</p>
+
+<style>
+.wave span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: waveIn 0.5s ease-out forwards;
+}
+.wave span:nth-child(1) { animation-delay: 0s; }
+.wave span:nth-child(2) { animation-delay: 0.1s; }
+.wave span:nth-child(3) { animation-delay: 0.2s; }
+.wave span:nth-child(4) { animation-delay: 0.3s; }
+.wave span:nth-child(5) { animation-delay: 0.4s; }
+.wave span:nth-child(6) { animation-delay: 0.5s; }
+.wave span:nth-child(7) { animation-delay: 0.6s; }
+.wave span:nth-child(8) { animation-delay: 0.7s; }
+.wave span:nth-child(9) { animation-delay: 0.8s; }
+.wave span:nth-child(10){ animation-delay: 0.9s; }
+
+@keyframes waveIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
                 <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
-                    <span class="bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent">
-                        USAID KHAN
-                    </span>
-                </h1>
+  <span class="bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent popIn">
+    USAID KHAN
+  </span>
+</h1>
+
+<style>
+.popIn {
+  display: inline-block;
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeScale 1.4s ease-out forwards;
+}
+@keyframes fadeScale {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+</style>
+
+
                 <p class="text-xl md:text-2xl lg:text-3xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
                     Creative Developer & Designer building 
                     <span class="text-neon font-semibold">digital experiences</span> 
@@ -173,7 +224,7 @@
       <div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
         
         <!-- Your actual image -->
-        <img src="images/blackshirt.jpg" 
+        <img src="images/dark blue.png" 
              alt="Profile Image" 
              class="w-full h-full object-cover" />
              
@@ -311,17 +362,11 @@
                     <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
                         <h3 class="text-xl font-semibold mb-4 text-white">Follow Me</h3>
                         <div class="flex space-x-4">
-                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-primary transition-all duration-300">
+                            <a href="https://github.com/U-SAIDK" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-primary transition-all duration-300">
                                 <i class="fab fa-github"></i>
                             </a>
-                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-blue-600 transition-all duration-300">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-pink-600 transition-all duration-300">
-                                <i class="fab fa-dribbble"></i>
-                            </a>
-                            <a href="#" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-red-600 transition-all duration-300">
-                                <i class="fab fa-instagram"></i>
+                            <a href="https://linkedin.com/in/tousaidkhan" class="social-link w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-300 hover:text-white hover:bg-blue-600 transition-all duration-300">
+                                <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
                     </div>
