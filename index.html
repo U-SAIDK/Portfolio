@@ -32,6 +32,28 @@
   --ease: cubic-bezier(0.4,0,0.2,1);
 }
 
+/* ==============================================
+   ROBOT WIDGET (inside hero, right side)
+   ============================================== */
+#robot-widget {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px;
+  height: 520px;
+  z-index: 1;
+  pointer-events: none;
+}
+#robot-widget canvas {
+  display: block;
+  pointer-events: none;
+}
+/* Hide on smaller screens where hero text needs the space */
+@media (max-width: 1024px) {
+  #robot-widget { display: none; }
+}
+
 html { scroll-behavior: smooth; cursor: none; }
 
 body {
@@ -1245,6 +1267,7 @@ footer {
       </a>
     </div>
   </div>
+  <div id="robot-widget" aria-hidden="true"></div>
   <div class="hero-scroll">
     <span>Scroll</span>
     <div class="scroll-wire"></div>
@@ -1996,5 +2019,331 @@ function launchKonami() {
   setTimeout(() => toast.remove(), 3200);
 }
 </script>
+
+<!-- =============================================
+     ROBOT 3D WIDGET — scripts only
+     The mount div lives inside #hero above.
+     Three.js loaded as a classic global script.
+     All robot vars live inside the IIFE.
+     ============================================= -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  if (typeof THREE === 'undefined') return;
+
+  /* ── helpers ─────────────────────────────────────────── */
+  var T    = THREE;
+  var PI   = Math.PI;
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function mesh(geo, mat) {
+    var m = new T.Mesh(geo, mat);
+    m.castShadow = true;
+    return m;
+  }
+
+  /* ── container ───────────────────────────────────────── */
+  var el = document.getElementById('robot-widget');
+  if (!el) return;
+  var CW = el.clientWidth  || 340;
+  var CH = el.clientHeight || 460;
+
+  /* ── renderer ────────────────────────────────────────── */
+  var renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(CW, CH);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type    = T.PCFSoftShadowMap;
+  renderer.toneMapping       = T.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  renderer.domElement.style.cssText = 'display:block;pointer-events:none;';
+  el.appendChild(renderer.domElement);
+
+  /* ── scene / camera ──────────────────────────────────── */
+  var scene  = new T.Scene();
+  var camera = new T.PerspectiveCamera(46, CW / CH, 0.1, 100);
+  camera.position.set(0, 0.5, 6.2);
+  camera.lookAt(0, 0.5, 0);
+
+  /* ── mouse (full-viewport coords) ────────────────────── */
+  var mx = 0, my = 0;
+  window.addEventListener('mousemove', function (e) {
+    mx =  (e.clientX / window.innerWidth)  * 2 - 1;
+    my = -(e.clientY / window.innerHeight) * 2 + 1;
+  }, { passive: true });
+
+  /* ── lights ──────────────────────────────────────────── */
+  scene.add(new T.AmbientLight(0x1a1a2e, 3.5));
+
+  var kL = new T.DirectionalLight(0x00d4ff, 4.5);
+  kL.position.set(-4, 6, 5);
+  kL.castShadow = true;
+  scene.add(kL);
+
+  var fL = new T.DirectionalLight(0x7b2fff, 2.4);
+  fL.position.set(4, 3, 2);
+  scene.add(fL);
+
+  var rL = new T.DirectionalLight(0xffffff, 1.6);
+  rL.position.set(0, 8, -5);
+  scene.add(rL);
+
+  var chestPt = new T.PointLight(0x00d4ff, 3.0, 4.5);
+  chestPt.position.set(0, 0.2, 1.1);
+  scene.add(chestPt);
+
+  /* ── materials ───────────────────────────────────────── */
+  var mBlack  = new T.MeshStandardMaterial({ color:0x080810, metalness:0.92, roughness:0.07 });
+  var mDark   = new T.MeshStandardMaterial({ color:0x0f0f1e, metalness:0.80, roughness:0.18 });
+  var mBlue   = new T.MeshStandardMaterial({ color:0x00d4ff, emissive:0x00d4ff, emissiveIntensity:0.8,  metalness:0.2, roughness:0.2 });
+  var mViolet = new T.MeshStandardMaterial({ color:0x7b2fff, emissive:0x7b2fff, emissiveIntensity:0.7,  metalness:0.2, roughness:0.2 });
+  var mEye    = new T.MeshStandardMaterial({ color:0x00d4ff, emissive:0x00d4ff, emissiveIntensity:4.0,  roughness:0.0, metalness:0.0 });
+  var mReact  = new T.MeshStandardMaterial({ color:0x00d4ff, emissive:0x00d4ff, emissiveIntensity:3.5,  roughness:0.0, metalness:0.0 });
+
+  /* ── env map for reflections ─────────────────────────── */
+  try {
+    var pg = new T.PMREMGenerator(renderer);
+    pg.compileEquirectangularShader();
+    var es = new T.Scene();
+    es.background = new T.Color(0x0c0c20);
+    scene.environment = pg.fromScene(es).texture;
+    pg.dispose();
+  } catch (_) {}
+
+  /* ── robot root ──────────────────────────────────────── */
+  var robot = new T.Group();
+  scene.add(robot);
+
+  /* HEAD */
+  var headG = new T.Group();
+  headG.position.set(0, 2.04, 0);
+  robot.add(headG);
+
+  var headM = mesh(new T.SphereGeometry(0.42, 32, 24), mBlack.clone());
+  headM.scale.set(1, 0.92, 0.88);
+  headG.add(headM);
+
+  var visor = new T.Mesh(
+    new T.CylinderGeometry(0.435, 0.435, 0.13, 32, 1, true, -PI * 0.55, PI * 1.1),
+    new T.MeshStandardMaterial({ color:0x001020, metalness:0.1, roughness:0.04, transparent:true, opacity:0.88, side:T.FrontSide })
+  );
+  visor.rotation.x = PI / 2;
+  headG.add(visor);
+
+  // Eyes
+  function makeEye(xOff) {
+    var g = new T.SphereGeometry(0.056, 16, 8);
+    g.scale(2.9, 0.55, 0.5);
+    var m = new T.Mesh(g, mEye);
+    m.position.set(xOff, 0.04, 0.375);
+    return m;
+  }
+  headG.add(makeEye(-0.13));
+  headG.add(makeEye( 0.13));
+
+  // Antenna stem
+  var antStem = mesh(new T.CylinderGeometry(0.024, 0.042, 0.24, 8), mBlue.clone());
+  antStem.position.set(0, 0.53, 0);
+  headG.add(antStem);
+
+  // Antenna tip (pulsing)
+  var antTipMat = mEye.clone();
+  var antTip = new T.Mesh(new T.SphereGeometry(0.042, 8, 8), antTipMat);
+  antTip.position.set(0, 0.66, 0);
+  headG.add(antTip);
+
+  // Neck
+  var neck = mesh(new T.CylinderGeometry(0.10, 0.15, 0.24, 16), mDark.clone());
+  neck.position.set(0, -0.43, 0);
+  headG.add(neck);
+
+  /* UPPER TORSO */
+  var torsoG = new T.Group();
+  torsoG.position.set(0, 1.1, 0);
+  robot.add(torsoG);
+
+  var chest = mesh(new T.BoxGeometry(1.0, 0.84, 0.54), mBlack.clone());
+  torsoG.add(chest);
+
+  var panel = new T.Mesh(
+    new T.BoxGeometry(0.60, 0.42, 0.04),
+    new T.MeshStandardMaterial({ color:0x080814, metalness:0.95, roughness:0.04 })
+  );
+  panel.position.set(0, 0.06, 0.285);
+  torsoG.add(panel);
+
+  var reactor = new T.Mesh(new T.SphereGeometry(0.092, 16, 16), mReact);
+  reactor.position.set(0, 0.06, 0.31);
+  torsoG.add(reactor);
+
+  var reactRing = new T.Mesh(new T.TorusGeometry(0.135, 0.019, 8, 32), mBlue.clone());
+  reactRing.position.set(0, 0.06, 0.30);
+  torsoG.add(reactRing);
+
+  // Shoulder pads
+  function makeShoulder(side) {
+    var sg = new T.Group();
+    sg.position.set(side * 0.77, 0.18, 0);
+    var pad = mesh(new T.SphereGeometry(0.25, 16, 12), mBlack.clone());
+    pad.scale.set(1, 0.70, 0.70);
+    sg.add(pad);
+    var stripe = new T.Mesh(new T.TorusGeometry(0.21, 0.026, 6, 24, PI), mBlue.clone());
+    stripe.rotation.z = PI / 2;
+    stripe.position.z = 0.04;
+    sg.add(stripe);
+    return sg;
+  }
+  torsoG.add(makeShoulder(-1));
+  torsoG.add(makeShoulder( 1));
+
+  // Collar
+  var collar = mesh(new T.CylinderGeometry(0.17, 0.21, 0.17, 16), mDark.clone());
+  collar.position.set(0, 0.49, 0);
+  torsoG.add(collar);
+
+  /* ABDOMEN */
+  var abdG = new T.Group();
+  abdG.position.set(0, 0.72, 0);
+  robot.add(abdG);
+
+  abdG.add(mesh(new T.CylinderGeometry(0.37, 0.33, 0.30, 16), mDark.clone()));
+
+  var belt = new T.Mesh(new T.TorusGeometry(0.38, 0.032, 6, 32), mViolet.clone());
+  belt.rotation.x = PI / 2;
+  belt.position.y = -0.10;
+  abdG.add(belt);
+
+  /* HIPS */
+  var hips = mesh(new T.BoxGeometry(0.82, 0.25, 0.40), mBlack.clone());
+  hips.position.set(0, 0.48, 0);
+  robot.add(hips);
+
+  /* ARMS */
+  function makeArm(side) {
+    var ag = new T.Group();
+    ag.position.set(side * 0.76, 1.22, 0);
+    ag.rotation.z = side * -0.10;
+
+    var ua = mesh(new T.CapsuleGeometry(0.115, 0.40, 8, 12), mBlack.clone());
+    ua.position.set(0, -0.23, 0);
+    ag.add(ua);
+
+    var elbow = new T.Mesh(new T.SphereGeometry(0.125, 12, 10), mDark.clone());
+    elbow.position.set(0, -0.52, 0);
+    ag.add(elbow);
+
+    var fa = mesh(new T.CapsuleGeometry(0.093, 0.36, 8, 12), mBlack.clone());
+    fa.position.set(0, -0.80, 0.04);
+    ag.add(fa);
+
+    var fring = new T.Mesh(new T.TorusGeometry(0.105, 0.017, 6, 20), mBlue.clone());
+    fring.position.set(0, -0.72, 0.04);
+    ag.add(fring);
+
+    var hand = mesh(new T.SphereGeometry(0.118, 12, 10), mBlack.clone());
+    hand.scale.set(1, 0.76, 0.76);
+    hand.position.set(0, -1.07, 0.04);
+    ag.add(hand);
+
+    return ag;
+  }
+  var leftArm  = makeArm(-1);
+  var rightArm = makeArm( 1);
+  robot.add(leftArm);
+  robot.add(rightArm);
+
+  /* LEGS */
+  function makeLeg(side) {
+    var lg = new T.Group();
+    lg.position.set(side * 0.28, 0.38, 0);
+
+    var thigh = mesh(new T.CapsuleGeometry(0.138, 0.40, 8, 12), mBlack.clone());
+    thigh.position.y = -0.25;
+    lg.add(thigh);
+
+    var knee = new T.Mesh(new T.SphereGeometry(0.145, 12, 10), mDark.clone());
+    knee.position.y = -0.54;
+    lg.add(knee);
+
+    var shin = mesh(new T.CapsuleGeometry(0.108, 0.40, 8, 12), mBlack.clone());
+    shin.position.y = -0.87;
+    lg.add(shin);
+
+    var stripe = new T.Mesh(new T.BoxGeometry(0.042, 0.20, 0.15), mViolet.clone());
+    stripe.position.set(0, -0.85, 0.12);
+    lg.add(stripe);
+
+    var foot = mesh(new T.BoxGeometry(0.23, 0.10, 0.36), mBlack.clone());
+    foot.position.set(0.02 * side, -1.20, 0.07);
+    lg.add(foot);
+
+    return lg;
+  }
+  robot.add(makeLeg(-1));
+  robot.add(makeLeg( 1));
+
+  /* Ground shadow */
+  var shadowDisc = new T.Mesh(
+    new T.CircleGeometry(0.70, 32),
+    new T.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.28, depthWrite:false })
+  );
+  shadowDisc.rotation.x = -PI / 2;
+  shadowDisc.position.y = -0.82;
+  robot.add(shadowDisc);
+
+  /* ── animation state ─────────────────────────────────── */
+  var hRot = { x:0, y:0 };
+  var tRot = { x:0, y:0 };
+  var aL = 0, aR = 0, lean = 0;
+  var clock = new T.Clock();
+  clock.start();
+
+  /* ── render loop ─────────────────────────────────────── */
+  (function loop() {
+    requestAnimationFrame(loop);
+    var t   = clock.getElapsedTime();
+    var swy = Math.sin(t * 0.72) * 0.008;
+
+    robot.position.y = Math.sin(t * 1.18) * 0.013;  // breathe
+
+    hRot.y = lerp(hRot.y, mx *  0.55, 0.058);
+    hRot.x = lerp(hRot.x, my *  0.30, 0.058);
+    tRot.y = lerp(tRot.y, mx *  0.22, 0.040);
+    tRot.x = lerp(tRot.x, my *  0.14, 0.040);
+    aL     = lerp(aL,  mx *  0.12 + my * 0.09, 0.046);
+    aR     = lerp(aR,  mx * -0.12 + my * 0.09, 0.046);
+    var d  = Math.sqrt(mx * mx + my * my);
+    lean   = lerp(lean, (1 - Math.min(d, 1)) * 0.06, 0.040);
+
+    headG.rotation.y  =  hRot.y + swy;
+    headG.rotation.x  = -hRot.x;
+    torsoG.rotation.y =  tRot.y;
+    torsoG.rotation.x = -tRot.x;
+    leftArm.rotation.z  =  0.10 + aL * 0.5;
+    leftArm.rotation.x  =  aL;
+    rightArm.rotation.z = -0.10 + aR * 0.5;
+    rightArm.rotation.x =  aR;
+    robot.rotation.x    =  lean;
+
+    var pulse = 0.5 + Math.sin(t * 3.1) * 0.35;
+    mReact.emissiveIntensity    = 2.8 + pulse;
+    chestPt.intensity           = 2.2 + pulse * 0.6;
+    antTipMat.emissiveIntensity = 2.0 + Math.sin(t * 4.2) * 1.0;
+
+    renderer.render(scene, camera);
+  }());
+
+  /* ── resize ──────────────────────────────────────────── */
+  window.addEventListener('resize', function () {
+    CW = el.clientWidth  || 340;
+    CH = el.clientHeight || 460;
+    camera.aspect = CW / CH;
+    camera.updateProjectionMatrix();
+    renderer.setSize(CW, CH);
+  }, { passive: true });
+
+}());
+</script>
+
 </body>
 </html>
