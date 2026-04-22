@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init({ publicKey: 'TG_oPQQ7T9cGYOkl_' });</script>
 <style>
 /* ==============================================
    RESET & ROOT VARIABLES
@@ -1631,21 +1633,24 @@ footer {
     </div>
 
     <form class="c-form reveal" style="transition-delay:0.2s" onsubmit="submitForm(event)">
+      <!-- Honeypot: invisible to humans, catches bots -->
+      <input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
+
       <div class="f-group">
         <label for="f-name">Your Name</label>
-        <input type="text" id="f-name" placeholder="John Doe" required>
+        <input type="text" id="f-name" name="name" placeholder="John Doe" required>
       </div>
       <div class="f-group">
         <label for="f-email">Email Address</label>
-        <input type="email" id="f-email" placeholder="john@example.com" required>
+        <input type="email" id="f-email" name="email" placeholder="john@example.com" required>
       </div>
       <div class="f-group">
         <label for="f-subject">Subject</label>
-        <input type="text" id="f-subject" placeholder="Let's work together">
+        <input type="text" id="f-subject" name="subject" placeholder="Let's work together">
       </div>
       <div class="f-group">
         <label for="f-msg">Message</label>
-        <textarea id="f-msg" placeholder="Tell me about your project..." required></textarea>
+        <textarea id="f-msg" name="message" placeholder="Tell me about your project..." required></textarea>
       </div>
       <button type="submit" class="f-submit">Send Message →</button>
     </form>
@@ -1878,17 +1883,53 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 /* ── CONTACT FORM ── */
-function submitForm(e) {
+async function submitForm(e) {
   e.preventDefault();
-  const btn = e.target.querySelector('.f-submit');
+  const form = e.target;
+  const btn  = form.querySelector('.f-submit');
+
+  // Silently drop bot submissions
+  if (form.querySelector('[name="botcheck"]').checked) return;
+
+  const name    = document.getElementById('f-name').value.trim();
+  const email   = document.getElementById('f-email').value.trim();
+  const subject = document.getElementById('f-subject').value.trim() || 'Portfolio Inquiry';
+  const message = document.getElementById('f-msg').value.trim();
+  if (!name || !email || !message) return;
+
   const orig = btn.textContent;
-  btn.textContent = '✓ Message Sent!';
-  btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
-  setTimeout(() => {
-    btn.textContent = orig;
-    btn.style.background = '';
-    e.target.reset();
-  }, 3200);
+  btn.textContent = 'Sending…';
+  btn.disabled    = true;
+  btn.style.opacity = '0.75';
+
+  try {
+    await emailjs.send('service_mucl0xa', 'template_3idfpjk', {
+      from_name: name,
+      reply_to:  email,
+      subject:   subject,
+      message:   message
+    });
+
+    btn.textContent      = '✓ Message Sent!';
+    btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+    btn.style.opacity    = '1';
+    btn.disabled         = false;
+    form.reset();
+    setTimeout(() => {
+      btn.textContent      = orig;
+      btn.style.background = '';
+    }, 3200);
+  } catch (err) {
+    console.error('EmailJS error:', err);
+    btn.textContent      = '✗ Failed — Try Again';
+    btn.style.background = 'linear-gradient(135deg,#ef4444,#b91c1c)';
+    btn.style.opacity    = '1';
+    btn.disabled         = false;
+    setTimeout(() => {
+      btn.textContent      = orig;
+      btn.style.background = '';
+    }, 3200);
+  }
 }
 
 /* ── KONAMI CODE ── */
