@@ -2817,6 +2817,7 @@
           }
           setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 3200);
         } else {
+          console.error('Submission failed details:', result.details);
           throw new Error(result.error || 'Failed to send message');
         }
       } catch (err) {

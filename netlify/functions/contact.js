@@ -51,10 +51,15 @@ exports.handler = async (event, context) => {
     const turnstileOutcome = await turnstileResponse.json();
 
     if (!turnstileOutcome.success) {
+      console.error('Turnstile verification failed:', turnstileOutcome['error-codes']);
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ success: false, error: 'Turnstile verification failed' })
+        body: JSON.stringify({ 
+          success: false, 
+          error: 'Turnstile verification failed', 
+          details: turnstileOutcome['error-codes'] 
+        })
       };
     }
 
