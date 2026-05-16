@@ -2753,10 +2753,7 @@
     });
 
     /* ── API CONFIGURATION ── */
-    // Use localhost for local development and the production URL for your deployed site
-    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'http://localhost:5000'
-      : 'https://your-production-backend.com'; // REPLACE with your actual backend URL (e.g., Render, Railway, etc.)
+    const API_BASE_URL = "https://YOUR-LIVE-BACKEND-URL.com";
 
     /* ── CONTACT FORM ── */
     async function submitForm(e) {
