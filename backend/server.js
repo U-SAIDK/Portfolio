@@ -7,10 +7,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5500', 'https://usaidkhan.netlify.app'];
+const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://127.0.0.1:8888', 'http://localhost:8888', 'https://usaidkhan.netlify.app'];
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    const isLocal = origin.startsWith('http://localhost') || 
+                    origin.startsWith('http://127.0.0.1') || 
+                    origin.startsWith('http://192.168.');
+
+    if (allowedOrigins.indexOf(origin) !== -1 || isLocal) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

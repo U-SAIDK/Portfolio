@@ -1,0 +1,9 @@
+{
+  "name": "usaid-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio website with Netlify Functions backend",
+  "main": "index.html",
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}

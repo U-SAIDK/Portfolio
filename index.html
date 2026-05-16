@@ -2753,7 +2753,10 @@
     });
 
     /* ── API CONFIGURATION ── */
-    const API_BASE_URL = "https://YOUR-LIVE-BACKEND-URL.com";
+    // Use relative path by default (works for Netlify production and Netlify Dev)
+    // Fallback to localhost:5000 only if we're on the standard Live Server port (5500)
+    const isLiveServer = window.location.port === '5500';
+    const API_BASE_URL = isLiveServer ? 'http://localhost:5000' : '';
 
     /* ── CONTACT FORM ── */
     async function submitForm(e) {
