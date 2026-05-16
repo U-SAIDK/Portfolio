@@ -2752,6 +2752,12 @@
       });
     });
 
+    /* ── API CONFIGURATION ── */
+    // Use localhost for local development and the production URL for your deployed site
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000'
+      : 'https://your-production-backend.com'; // REPLACE with your actual backend URL (e.g., Render, Railway, etc.)
+
     /* ── CONTACT FORM ── */
     async function submitForm(e) {
       e.preventDefault();
@@ -2783,7 +2789,7 @@
       btn.style.opacity = '0.75';
 
       try {
-        const response = await fetch('http://localhost:5000/api/contact', {
+        const response = await fetch(`${API_BASE_URL}/api/contact`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
