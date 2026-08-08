@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usaid Khan — Software Engineer</title>
+  <meta name="description"
+    content="Usaid Khan — Software Engineer specializing in Java microservices, DevOps, Kubernetes, and cloud infrastructure. Based in Pune, India.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&family=Outfit:wght@800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+  <!-- Mesh bg -->
+  <div class="bg-mesh"></div>
+  <div class="bg-mesh-mid"></div>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div class="loader-name">USAID KHAN</div>
+    <div class="loader-track">
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor-outer" id="co"></div>
+  <div class="cursor-inner" id="ci"></div>
+
+  <!-- Konami -->
+  <div id="konami-overlay"><canvas id="konami-canvas"></canvas></div>
+
+  <!-- =============================================
+     NAVBAR
+     ============================================= -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">UK.</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#certifications">Certs</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <div class="burger" id="burger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div id="mob-menu">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#certifications">Certifications</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <!-- =============================================
+     HERO
+     ============================================= -->
+  <section id="hero">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-body">
+      <div class="hero-badge reveal">
+        <span class="dot"></span>
+        Open to new opportunities
+      </div>
+      <h1 class="hero-name reveal">Usaid<br>Khan</h1>
+      <div class="hero-role-line reveal">
+        <span class="hero-prefix">I'm a&nbsp;</span>
+        <span class="hero-typed" id="typed"></span>
+        <span class="hero-cursor-blink"></span>
+      </div>
+      <p class="hero-bio reveal">
+        Building elegant systems at the intersection of full-stack development, DevOps automation, and cloud
+        infrastructure turning complexity into clean, scalable solutions.
+      </p>
+      <div class="hero-btns reveal">
+        <a href="USAID_RESUME.pdf" download="USAID_RESUME.pdf" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Download CV</span>
+        </a>
+        <a href="#contact" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          Contact Me
+        </a>
+      </div>
+      <div class="hero-socials reveal">
+        <a href="https://linkedin.com/in/tousaidkhan/" target="_blank" class="social-btn" title="LinkedIn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
+            <rect x="2" y="9" width="4" height="12" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+        </a>
+        <a href="https://github.com/U-SAIDK" target="_blank" class="social-btn" title="GitHub">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
+          </svg>
+        </a>
+        <a href="mailto:usaidk.tech@gmail.com" class="social-btn" title="Email">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div id="robot-widget" aria-hidden="true"></div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-wire"></div>
+    </div>
+  </section>
+
+  <!-- =============================================
+     ABOUT
+     ============================================= -->
+  <section id="about">
+    <span class="section-eyebrow reveal">01 — About</span>
+    <h2 class="section-title reveal">Who I Am</h2>
+    <div class="about-grid">
+      <div class="photo-frame reveal">
+        <div class="photo-glow-ring"></div>
+        <div class="photo-box">
+          <img src="usaid.webp" alt="Usaid Khan" class="profile-img" loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="about-content reveal" style="transition-delay:0.15s">
+        <h3>Usaid Khan</h3>
+        <p>
+          I'm a software engineer based in Pune, India, passionate about the full spectrum from crafting pixel-perfect
+          web interfaces to orchestrating distributed systems on Kubernetes. I thrive at the intersection of code,
+          infrastructure, and cloud.
+        </p>
+        <p>
+          Currently a Software Engineer at Data Innovations Technologies, I work deeply with Java microservices, Docker
+          Swarm, CI/CD pipelines with Jenkins & ArgoCD, and GitOps practices. I hold multiple Oracle Cloud
+          Infrastructure and Linux Foundation certifications.
+        </p>
+        <p>
+          I'm also an open-source contributor (Simple Accounts project) and love exploring cloud-native patterns, test
+          automation, and SRE principles in my day to day work.
+        </p>
+        <div class="stat-row">
+          <div class="stat-card reveal">
+            <span class="stat-n">1+</span>
+            <span class="stat-l">Years Experience</span>
+          </div>
+          <div class="stat-card reveal" style="transition-delay:0.1s">
+            <span class="stat-n">10+</span>
+            <span class="stat-l">Certifications</span>
+          </div>
+          <div class="stat-card reveal" style="transition-delay:0.2s">
+            <span class="stat-n">15+</span>
+            <span class="stat-l">Projects Built</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+     SKILLS
+     ============================================= -->
+  <section id="skills">
+    <span class="section-eyebrow reveal">02 — Skills</span>
+    <h2 class="section-title reveal">Tech Stack</h2>
+    <div class="skills-grid">
+
+      <!-- Programming Languages -->
+      <div class="skill-cat reveal">
+        <div class="cat-head">
+          <div class="cat-icon">⚡</div>
+          <span class="cat-name">Programming Languages</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Java</span>
+          <span class="badge">JavaScript</span>
+          <span class="badge">Python</span>
+          <span class="badge">SQL</span>
+        </div>
+      </div>
+
+      <!-- Scripting Languages -->
+      <div class="skill-cat reveal" style="transition-delay:0.08s">
+        <div class="cat-head">
+          <div class="cat-icon">🧾</div>
+          <span class="cat-name">Scripting Languages</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Python</span>
+          <span class="badge">Bash</span>
+          <span class="badge">Groovy</span>
+          <span class="badge">YAML</span>
+        </div>
+      </div>
+
+      <!-- Backend -->
+      <div class="skill-cat reveal" style="transition-delay:0.16s">
+        <div class="cat-head">
+          <div class="cat-icon">⚙️</div>
+          <span class="cat-name">Backend Technologies</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Core Java</span>
+          <span class="badge">Spring Boot</span>
+          <span class="badge">Spring MVC</span>
+          <span class="badge">Spring Security</span>
+          <span class="badge">REST APIs</span>
+          <span class="badge">Microservices</span>
+          <span class="badge">JDBC</span>
+          <span class="badge">Servlets</span>
+          <span class="badge">JSP</span>
+          <span class="badge">Hibernate / ORM</span>
+          <span class="badge">Spring Data JPA</span>
+          <span class="badge">JWT</span>
+          <span class="badge">OAuth2</span>
+          <span class="badge">Kafka</span>
+          <span class="badge">Collections Framework</span>
+          <span class="badge">DSA</span>
+        </div>
+      </div>
+
+      <!-- Databases -->
+      <div class="skill-cat reveal" style="transition-delay:0.24s">
+        <div class="cat-head">
+          <div class="cat-icon">🗄️</div>
+          <span class="cat-name">Databases</span>
+        </div>
+        <div class="badges">
+          <span class="badge">SQL</span>
+          <span class="badge">PostgreSQL</span>
+          <span class="badge">Oracle Database</span>
+          <span class="badge">MongoDB</span>
+        </div>
+      </div>
+
+      <!-- DevOps -->
+      <div class="skill-cat reveal" style="transition-delay:0.32s">
+        <div class="cat-head">
+          <div class="cat-icon">🔧</div>
+          <span class="cat-name">DevOps</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Docker</span>
+          <span class="badge">Kubernetes</span>
+          <span class="badge">Docker Swarm</span>
+          <span class="badge">Maven</span>
+          <span class="badge">Gradle</span>
+          <span class="badge">Linux</span>
+          <span class="badge">GitOps</span>
+          <span class="badge">Ansible</span>
+          <span class="badge">Helm</span>
+          <span class="badge">Networking</span>
+        </div>
+      </div>
+
+      <!-- CI/CD -->
+      <div class="skill-cat reveal" style="transition-delay:0.40s">
+        <div class="cat-head">
+          <div class="cat-icon">🚀</div>
+          <span class="cat-name">CI/CD Tools</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Jenkins</span>
+          <span class="badge">GitLab CI</span>
+          <span class="badge">GitHub Actions</span>
+        </div>
+      </div>
+
+      <!-- Source Control -->
+      <div class="skill-cat reveal" style="transition-delay:0.48s">
+        <div class="cat-head">
+          <div class="cat-icon">🔁</div>
+          <span class="cat-name">Source Code Management</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Git</span>
+          <span class="badge">GitHub</span>
+        </div>
+      </div>
+
+      <!-- Cloud -->
+      <div class="skill-cat reveal" style="transition-delay:0.56s">
+        <div class="cat-head">
+          <div class="cat-icon">☁️</div>
+          <span class="cat-name">Cloud Platforms</span>
+        </div>
+        <div class="badges">
+          <span class="badge">AWS</span>
+          <span class="badge">Azure</span>
+          <span class="badge">GCP</span>
+          <span class="badge">Oracle Cloud</span>
+        </div>
+      </div>
+
+      <!-- Monitoring -->
+      <div class="skill-cat reveal" style="transition-delay:0.64s">
+        <div class="cat-head">
+          <div class="cat-icon">📊</div>
+          <span class="cat-name">Monitoring & Observability</span>
+        </div>
+        <div class="badges">
+          <span class="badge">Prometheus</span>
+          <span class="badge">Grafana</span>
+        </div>
+      </div>
+
+      <!-- IDEs -->
+      <div class="skill-cat reveal" style="transition-delay:0.72s">
+        <div class="cat-head">
+          <div class="cat-icon">💻</div>
+          <span class="cat-name">IDEs</span>
+        </div>
+        <div class="badges">
+          <span class="badge">IntelliJ IDEA</span>
+          <span class="badge">VS Code</span>
+          <span class="badge">Postman</span>
+        </div>
+      </div>
+
+      <!-- Web -->
+      <div class="skill-cat reveal" style="transition-delay:0.80s">
+        <div class="cat-head">
+          <div class="cat-icon">🌐</div>
+          <span class="cat-name">Web & CMS</span>
+        </div>
+        <div class="badges">
+          <span class="badge">HTML</span>
+          <span class="badge">CSS</span>
+          <span class="badge">WordPress</span>
+          <span class="badge">Elementor</span>
+          <span class="badge">WooCommerce</span>
+          <span class="badge">Shopify</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <!-- =============================================
+     EXPERIENCE
+     ============================================= -->
+  <section id="experience">
+    <span class="section-eyebrow reveal">03 — Experience</span>
+    <h2 class="section-title reveal">Where I've Worked</h2>
+    <div class="timeline">
+
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="exp-card" data-tilt>
+          <div class="exp-top">
+            <div>
+              <div class="exp-role">Software Engineer </div>
+              <div class="exp-company">Data Innovations Technologies Pvt. Ltd</div>
+            </div>
+            <div class="exp-meta">
+              <span class="exp-date">Jan 2026 – Present</span>
+              <span class="exp-current">● Current Role</span>
+            </div>
+          </div>
+          <ul class="exp-list">
+            <li>Developed scalable backend applications using Core Java and Spring Framework, applying strong OOP
+              principles</li>
+
+            <li>Designed and built RESTful APIs and microservices using Spring Boot, Spring MVC, and Spring REST</li>
+            <li>Implemented secure authentication and authorization using Spring Security, JWT, and OAuth2</li>
+            <li>Built data-driven applications using PostgreSQL and MongoDB with ORM tools like Hibernate and Spring
+              Data JPA</li>
+            <li>Worked with JDBC, Servlets, and JSP for backend and web-based application development</li>
+            <li>Developed CRUD-based systems using MVC architecture and optimized performance using DSA and Java
+              Collections</li>
+            <li>Built event-driven microservices using Spring Boot and Kafka</li>
+            <li>Implemented logging and monitoring using Log4j, Prometheus, and Grafana</li>
+            <li>Containerized applications using Docker and managed deployments with Kubernetes and Docker Swarm</li>
+            <li>Applied DevOps practices including CI/CD concepts, automation workflows, and environment configuration
+            </li>
+            <li>Worked extensively in Linux environments for development, troubleshooting, and deployment</li>
+            <li>Used Git and GitHub for version control and collaborative development workflows</li>
+            <li>Performed API testing and contributed to application reliability through manual and automated testing
+            </li>
+            <li>Collaborated in Agile teams, contributing to design, debugging, and feature delivery</li>
+          </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">Core Java</span>
+              <span class="exp-tag">Spring Boot</span>
+              <span class="exp-tag">Spring Security</span>
+              <span class="exp-tag">REST APIs</span>
+              <span class="exp-tag">Microservices</span>
+              <span class="exp-tag">Hibernate / JPA</span>
+              <span class="exp-tag">PostgreSQL</span>
+              <span class="exp-tag">MongoDB</span>
+              <span class="exp-tag">JWT / OAuth2</span>
+              <span class="exp-tag">Docker</span>
+              <span class="exp-tag">Kubernetes</span>
+              <span class="exp-tag">CI/CD</span>
+              <span class="exp-tag">Github Actions</span>
+              <span class="exp-tag">Jenkins</span>
+              <span class="exp-tag">Gitlab</span>
+              <span class="exp-tag">Git / GitOps</span>
+              <span class="exp-tag">Github</span>
+              <span class="exp-tag">Linux</span>
+              <span class="exp-tag">Networking</span>
+              <span class="exp-tag">Prometheus / Grafana </span>
+              <span class="exp-tag">Yml</span>
+              <span class="exp-tag">Bash</span>
+              <span class="exp-tag">Groovy</span>
+              <span class="exp-tag">Cloud Services: AWS, Microsoft Azure , Oracle Cloud, GCP</span>
+
+
+            </div>
+        </div>
+      </div>
+
+      <div class="tl-item reveal" style="transition-delay:0.18s">
+        <div class="tl-dot" style="background:var(--secondary);box-shadow:0 0 14px var(--s-glow)"></div>
+        <div class="exp-card" data-tilt>
+          <div class="exp-top">
+            <div>
+              <div class="exp-role">Software Engineer intern</div>
+              <div class="exp-company">Data innovations Technologies pvt.ltd</div>
+            </div>
+            <div class="exp-meta">
+              <span class="exp-date">Aug 2024 – Jan 2025</span>
+            </div>
+          </div>
+          <ul class="exp-list">
+            <li>Assisted in containerizing applications using Docker, enabling consistent development and deployment
+              environments</li>
+            <li>Gained hands-on exposure to container orchestration tools such as Kubernetes and Docker Swarm through
+              guided implementations</li>
+            <li>Supported CI/CD workflows, understanding automated build, test, and deployment pipelines</li>
+            <li>Worked with Linux-based environments for application setup, configuration, and troubleshooting</li>
+            <li>Collaborated on deploying and managing web and backend applications, focusing on deployment lifecycle
+              rather than just development</li>
+            <li>Contributed to environment configuration and dependency management, improving application portability
+              across systems</li>
+            <li>Assisted in implementing authentication mechanisms (JWT, OAuth2.0) within deployed applications as part
+              of backend integration</li>
+            <li>Participated in WordPress and e-commerce deployments (WooCommerce, Shopify), focusing on setup,
+              customization, and live environment handling</li>
+            <li>Built a strong foundation in DevOps and cloud fundamentals, including containerization (Docker),
+              container orchestration (Kubernetes, Docker Swarm), and basic CI/CD concepts through structured learning
+              and guided projects</li>
+          </ul>
+            <div class="exp-tags">
+              <span class="exp-tag">WordPress</span>
+              <span class="exp-tag">WooCommerce</span>
+              <span class="exp-tag">Shopify</span>
+              <span class="exp-tag">JavaScript</span>
+              <span class="exp-tag">Core Java</span>
+              <span class="exp-tag">Junit</span>
+              <span class="exp-tag">JDBC</span>
+              <span class="exp-tag">Spring Boot</span>
+              <span class="exp-tag">Spring Security</span>
+              <span class="exp-tag">OAuth2</span>
+              <span class="exp-tag">JWT</span>
+              <span class="exp-tag">SQL</span>
+              <span class="exp-tag">PostgreSQL</span>
+              <span class="exp-tag">Docker</span>
+              <span class="exp-tag">Docker Swarm</span>
+              <span class="exp-tag">Kubernetes</span>
+              <span class="exp-tag">CI/CD</span>
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+     CERTIFICATIONS
+     ============================================= -->
+  <section id="certifications">
+    <span class="section-eyebrow reveal">04 — Certifications</span>
+    <h2 class="section-title reveal">Credentials</h2>
+
+    <div class="marquee-wrap reveal">
+      <div class="marquee-track">
+        <div class="m-item"><a href="https://drive.google.com/file/d/1IqC9ayyv27nbTNRzPH8Sa1FCKhL7yC1F/view"
+            target="_blank">🏆 OCI Generative AI Professional</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/10cluEfej0vl7dwio32ARdw_2k3n8dbII/view"
+            target="_blank">☁️ OCI Foundations Associate</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1aihCCQZucvdtMtZ6i54j7sNMFHUwehQz/view"
+            target="_blank">🤖 OCI AI Foundations</a></div>
+        <div class="m-item"><a href="#" target="_blank">⚙️ Intro to Kubernetes — LFS158</a></div>
+        <div class="m-item"><a href="https://www.credly.com/badges/4847f738-c363-4588-a3be-22a40af0ed24/public_url"
+            target="_blank">🔄 Intro to GitOps — LFS169</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1Ud_CntCAMfjSGiRTOn-qCsOkAUKUctHi/view?usp=sharing"
+            target="_blank">🛡️ DevOps &amp; SRE — LFS162</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1H6mSl11w13A3K9Guldmror3f0PQJ3nS6/view"
+            target="_blank">🐧 Intro to Linux — LFS101</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1sTfHgONjlj_X94mdA0GbdqVED8_TK8DX/view"
+            target="_blank">📊 SRE Fundamentals — Udemy</a></div>
+        <div class="m-item"><a href="https://www.credly.com/badges/69abd7a8-087f-4def-a69d-c47991005dfe"
+            target="_blank">💙 IBM Cloud Computing</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1q6Yclr1IiMMgPzN62EFlNFMHJQUcPmgl/view"
+            target="_blank">🌐 WordPress Developer — Udemy</a></div>
+
+        <!-- duplicate for seamless loop -->
+        <div class="m-item"><a href="https://drive.google.com/file/d/1IqC9ayyv27nbTNRzPH8Sa1FCKhL7yC1F/view"
+            target="_blank">🏆 OCI Generative AI Professional</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/10cluEfej0vl7dwio32ARdw_2k3n8dbII/view"
+            target="_blank">☁️ OCI Foundations Associate</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1aihCCQZucvdtMtZ6i54j7sNMFHUwehQz/view"
+            target="_blank">🤖 OCI AI Foundations</a></div>
+        <div class="m-item"><a href="#" target="_blank">⚙️ Intro to Kubernetes — LFS158</a></div>
+        <div class="m-item"><a href="https://www.credly.com/badges/4847f738-c363-4588-a3be-22a40af0ed24/public_url"
+            target="_blank">🔄 Intro to GitOps — LFS169</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1Ud_CntCAMfjSGiRTOn-qCsOkAUKUctHi/view?usp=sharing"
+            target="_blank">🛡️ DevOps &amp; SRE — LFS162</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1H6mSl11w13A3K9Guldmror3f0PQJ3nS6/view"
+            target="_blank">🐧 Intro to Linux — LFS101</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1sTfHgONjlj_X94mdA0GbdqVED8_TK8DX/view"
+            target="_blank">📊 SRE Fundamentals — Udemy</a></div>
+        <div class="m-item"><a href="https://www.credly.com/badges/69abd7a8-087f-4def-a69d-c47991005dfe"
+            target="_blank">💙 IBM Cloud Computing</a></div>
+        <div class="m-item"><a href="https://drive.google.com/file/d/1q6Yclr1IiMMgPzN62EFlNFMHJQUcPmgl/view"
+            target="_blank">🌐 WordPress Developer — Udemy</a></div>
+      </div>
+    </div>
+
+    <div class="cert-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">🏆</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/1IqC9ayyv27nbTNRzPH8Sa1FCKhL7yC1F/view" target="_blank">Oracle
+              Cloud Infrastructure 2025 Certified Generative AI Professional</a></h4>
+          <span>Oracle · 2025</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.06s">
+        <div class="cert-icon">☁️</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/10cluEfej0vl7dwio32ARdw_2k3n8dbII/view" target="_blank">Oracle
+              Cloud Infrastructure Foundations Associate</a></h4>
+          <span>Oracle · 2025</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.12s">
+        <div class="cert-icon">🤖</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/1aihCCQZucvdtMtZ6i54j7sNMFHUwehQz/view" target="_blank">OCI AI
+              Foundations</a></h4>
+          <span>Oracle · 2025</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.18s">
+        <div class="cert-icon">⚙️</div>
+        <div class="cert-body">
+          <h4><a href="#" target="_blank">Introduction to Kubernetes (LFS158)</a></h4>
+          <span>Linux Foundation</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.24s">
+        <div class="cert-icon">🔄</div>
+        <div class="cert-body">
+          <h4><a href="https://www.credly.com/badges/4847f738-c363-4588-a3be-22a40af0ed24/public_url"
+              target="_blank">Introduction to GitOps (LFS169)</a></h4>
+          <span>Linux Foundation</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.30s">
+        <div class="cert-icon">🛡️</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/1Ud_CntCAMfjSGiRTOn-qCsOkAUKUctHi/view?usp=sharing"
+              target="_blank">DevOps &amp; SRE Fundamentals (LFS162)</a></h4>
+          <span>Linux Foundation</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.36s">
+        <div class="cert-icon">🐧</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/1H6mSl11w13A3K9Guldmror3f0PQJ3nS6/view"
+              target="_blank">Introduction to Linux (LFS101)</a></h4>
+          <span>Linux Foundation</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.42s">
+        <div class="cert-icon">📊</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/1sTfHgONjlj_X94mdA0GbdqVED8_TK8DX/view" target="_blank">SRE
+              Fundamentals</a></h4>
+          <span>Udemy</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.48s">
+        <div class="cert-icon">💙</div>
+        <div class="cert-body">
+          <h4><a href="https://www.credly.com/badges/69abd7a8-087f-4def-a69d-c47991005dfe" target="_blank">IBM Cloud
+              Computing Fundamentals</a></h4>
+          <span>IBM</span>
+        </div>
+      </div>
+
+      <div class="cert-card reveal" style="transition-delay:0.54s">
+        <div class="cert-icon">🌐</div>
+        <div class="cert-body">
+          <h4><a href="https://drive.google.com/file/d/1q6Yclr1IiMMgPzN62EFlNFMHJQUcPmgl/view" target="_blank">WordPress
+              Developer</a></h4>
+          <span>Udemy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =============================================
+     EDUCATION
+     ============================================= -->
+  <section id="education">
+    <span class="section-eyebrow reveal">05 — Education</span>
+    <h2 class="section-title reveal">Academic Background</h2>
+    <div class="edu-card reveal">
+      <div>
+        <div class="edu-degree">B.Sc. Computer Science</div>
+        <div class="edu-school">Aki's Poona College · Savitribai Phule Pune University</div>
+        <div class="edu-period">November 2022 – April 2025 · Pune, India</div>
+        <div class="edu-details">
+          <div class="edu-dt">
+            <span class="edu-dl">Grade</span>
+            <span class="edu-dv">A+</span>
+          </div>
+          <div class="edu-dt">
+            <span class="edu-dl">CGPA</span>
+            <span class="edu-dv">8.28 / 10</span>
+          </div>
+          <div class="edu-dt">
+            <span class="edu-dl">Specialisation</span>
+            <span class="edu-dv">Computer Science</span>
+          </div>
+        </div>
+      </div>
+      <div class="edu-badge">
+        <span class="edu-cgpa-n">8.28</span>
+        <span class="edu-cgpa-l">CGPA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+     CONTACT
+     ============================================= -->
+  <section id="contact">
+    <span class="section-eyebrow reveal">06 — Contact</span>
+    <h2 class="section-title reveal">Get In Touch</h2>
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>Let's build something great together.</h3>
+        <p>Whether you have a project in mind, want to collaborate, or just want to say hi my inbox is always open. I'll
+          get back to you within 24 hours.</p>
+        <div class="contact-links">
+          <a href="mailto:usaidk.tech@gmail.com" class="c-link">
+            <div class="c-link-icon">✉️</div>
+            <div class="c-link-text">
+              <span class="c-link-label">Email</span>
+              <span class="c-link-val">usaidk.tech@gmail.com</span>
+            </div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+          <a href="https://linkedin.com/in/tousaidkhan/" target="_blank" class="c-link">
+            <div class="c-link-icon">💼</div>
+            <div class="c-link-text">
+              <span class="c-link-label">LinkedIn</span>
+              <span class="c-link-val">linkedin.com/in/tousaidkhan</span>
+            </div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+          <a href="tel:+917410512346" class="c-link">
+            <div class="c-link-icon">📱</div>
+            <div class="c-link-text">
+              <span class="c-link-label">Phone</span>
+              <span class="c-link-val">+91-7410512346</span>
+            </div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+          <div class="c-link" style="cursor:default">
+            <div class="c-link-icon">📍</div>
+            <div class="c-link-text">
+              <span class="c-link-label">Location</span>
+              <span class="c-link-val">967- Raviwar Peth Laxmi Road Pune - 411002 , Maharastra - India</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form id="contact-form" class="c-form reveal" style="transition-delay:0.2s" novalidate>
+        <!-- Honeypot: invisible to humans, catches bots -->
+        <input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
+
+        <div class="f-group">
+          <label for="f-name">Your Name</label>
+          <input type="text" id="f-name" name="name" placeholder="John Doe" maxlength="100" autocomplete="name" required>
+          <span class="f-error" id="f-name-error"></span>
+        </div>
+        <div class="f-group">
+          <label for="f-email">Email Address</label>
+          <input type="email" id="f-email" name="email" placeholder="john@example.com" maxlength="254" autocomplete="email" required>
+          <span class="f-error" id="f-email-error"></span>
+        </div>
+        <div class="f-group">
+          <label for="f-subject">Subject</label>
+          <input type="text" id="f-subject" name="subject" placeholder="Let's work together" maxlength="150">
+        </div>
+        <div class="f-group">
+          <label for="f-msg">Message</label>
+          <textarea id="f-msg" name="message" placeholder="Tell me about your project..." maxlength="5000" required></textarea>
+          <span class="f-error" id="f-msg-error"></span>
+        </div>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADQg9h4a_7H8KQHY" style="margin-bottom: 10px;"></div>
+        <button type="submit" class="f-submit">
+          <span class="f-submit-label">Send Message →</span>
+        </button>
+        <p class="f-status" id="f-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- =============================================
+     FOOTER
+     ============================================= -->
+  <footer>
+    <div class="footer-left">
+      <div class="footer-name">Usaid Khan</div>
+      <div class="footer-tag">Built with <span>passion</span> &amp; caffeine ☕</div>
+    </div>
+    <div class="footer-socials">
+      <a href="https://linkedin.com/in/tousaidkhan/" target="_blank" class="social-btn" title="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
+          <rect x="2" y="9" width="4" height="12" />
+          <circle cx="4" cy="4" r="2" />
+        </svg>
+      </a>
+      <a href="https://github.com/U-SAIDK" target="_blank" class="social-btn" title="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
+        </svg>
+      </a>
+      <a href="mailto:usaidk.tech@gmail.com" class="social-btn" title="Email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
+        </svg>
+      </a>
+    </div>
+    <div class="footer-copy">
+      © 2026 Usaid Khan · All rights reserved ·
+      <a href="https://www.linkedin.com/in/tousaidkhan/" target="_blank">Linkedin</a>
+    </div>
+  </footer>
+
+  <!-- =============================================
+     JAVASCRIPT
+     ============================================= -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="assets/js/particles.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/contact-form.js" defer></script>
+  <script src="assets/js/robot.js" defer></script>
+</body>
+
+</html>

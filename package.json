@@ -1,9 +1,12 @@
 {
   "name": "usaid-portfolio",
   "version": "1.0.0",
-  "description": "Portfolio website with Netlify Functions backend",
-  "main": "index.html",
+  "private": true,
+  "description": "Usaid Khan's portfolio site (static frontend in public/, Netlify Function backend in netlify/functions/)",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "nodemailer": "^6.9.13"
+    "nodemailer": "^9.0.5"
   }
 }

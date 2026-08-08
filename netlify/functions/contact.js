@@ -1,100 +1,47 @@
-const nodemailer = require('nodemailer');
+/**
+ * Production contact-form endpoint, served at /api/contact via the
+ * redirect rule in netlify.toml. See ../../shared/contact-handler.js for
+ * the actual validation / Turnstile / email-sending logic shared with the
+ * local Express dev server.
+ *
+ * IMPORTANT: SMTP_USER, SMTP_PASS, MAIL_TO and TURNSTILE_SECRET_KEY must be
+ * configured under Site settings → Environment variables in the Netlify
+ * dashboard. Netlify does NOT read a repo .env file for deployed functions
+ * — that file is only used by `netlify dev` for local testing.
+ */
 
-exports.handler = async (event, context) => {
-  // CORS Headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
+'use strict';
 
-  // Handle preflight OPTIONS request
+const { handleContactSubmission } = require('../../shared/contact-handler');
+
+const HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json',
+};
+
+exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+    return { statusCode: 200, headers: HEADERS, body: '' };
   }
 
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ success: false, error: 'Method Not Allowed' })
-    };
+    return { statusCode: 405, headers: HEADERS, body: JSON.stringify({ success: false, error: 'Method Not Allowed' }) };
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(event.body || '{}');
+  } catch {
+    return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ success: false, error: 'Malformed request body' }) };
   }
 
   try {
-    const { name, email, subject, message, token } = JSON.parse(event.body);
-
-    // 1. Validate Input
-    if (!name || !email || !message || !token) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ success: false, error: 'Missing required fields or turnstile token' })
-      };
-    }
-
-    // 2. Verify Turnstile Token
-    const turnstileData = new URLSearchParams();
-    turnstileData.append('secret', process.env.TURNSTILE_SECRET_KEY);
-    turnstileData.append('response', token);
-
-    const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      body: turnstileData
-    });
-
-    const turnstileOutcome = await turnstileResponse.json();
-
-    if (!turnstileOutcome.success) {
-      console.error('Turnstile verification failed:', turnstileOutcome['error-codes']);
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ 
-          success: false, 
-          error: 'Turnstile verification failed', 
-          details: turnstileOutcome['error-codes'] 
-        })
-      };
-    }
-
-    // 3. Nodemailer Transporter Setup
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    // 4. Send Email
-    const mailOptions = {
-      from: process.env.SMTP_USER,
-      to: process.env.MAIL_TO || process.env.SMTP_USER,
-      replyTo: email,
-      subject: `Portfolio Contact: ${subject || 'New Message'}`,
-      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ success: true, message: 'Message sent successfully' })
-    };
-
+    const { status, body } = await handleContactSubmission(payload, process.env);
+    return { statusCode: status, headers: HEADERS, body: JSON.stringify(body) };
   } catch (error) {
-    console.error('Error processing contact form:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ success: false, error: 'Internal server error' })
-    };
+    console.error('Unexpected error processing contact form:', error);
+    return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ success: false, error: 'Internal server error' }) };
   }
 };

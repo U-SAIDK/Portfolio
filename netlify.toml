@@ -1,6 +1,11 @@
 [build]
-  publish = "."
+  publish = "public"
   functions = "netlify/functions"
+
+[build.environment]
+  # Netlify Functions need Node >= 18 for the built-in `fetch` used to
+  # verify Cloudflare Turnstile tokens in netlify/functions/contact.js.
+  NODE_VERSION = "20"
 
 [[redirects]]
   from = "/api/*"

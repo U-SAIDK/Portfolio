@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Environment variables (never commit real secrets)
+.env
+.env.local
+.env.*.local
+server/.env
+
+# Netlify
+.netlify/
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Dependencies
+node_modules/
+backend/node_modules/
+server/node_modules/
+
+# Dependencies
+node_modules/
+backend/node_modules/
+server/node_modules/
