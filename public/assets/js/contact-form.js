@@ -67,6 +67,15 @@
     else statusEl.removeAttribute('data-state');
   }
 
+  // Turnstile tokens expire a few minutes after being issued. Visitors who
+  // take a while filling out the form can end up submitting an already-dead
+  // token, which Cloudflare rejects as "timeout-or-duplicate". The widget's
+  // data-expired-callback/data-error-callback (in index.html) call this so
+  // a fresh token is ready by the time they actually click submit.
+  window.handleTurnstileExpired = function () {
+    if (window.turnstile) window.turnstile.reset();
+  };
+
   function setLoading(isLoading) {
     submitBtn.disabled = isLoading;
     submitBtn.classList.remove('is-success', 'is-error');
@@ -147,6 +156,11 @@
       submitBtn.classList.add('is-error');
       submitLabel.textContent = '✗ Failed — Try Again';
       setStatus(err.message || 'Message could not be sent. Please try again.', 'error');
+      // A failed attempt's token is spent (or expired) either way — Turnstile
+      // tokens are single-use, so without this the *same* dead token gets
+      // resubmitted on every retry and fails forever with "timeout-or-duplicate"
+      // until the page is reloaded.
+      if (window.turnstile) window.turnstile.reset();
 
       setTimeout(() => {
         submitBtn.classList.remove('is-error');

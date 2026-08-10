@@ -744,7 +744,7 @@
           <textarea id="f-msg" name="message" placeholder="Tell me about your project..." maxlength="5000" required></textarea>
           <span class="f-error" id="f-msg-error"></span>
         </div>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADQg9h4a_7H8KQHY" style="margin-bottom: 10px;"></div>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADQg9h4a_7H8KQHY" data-expired-callback="handleTurnstileExpired" data-error-callback="handleTurnstileExpired" style="margin-bottom: 10px;"></div>
         <button type="submit" class="f-submit">
           <span class="f-submit-label">Send Message →</span>
         </button>
