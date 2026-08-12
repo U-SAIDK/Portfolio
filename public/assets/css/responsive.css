@@ -1,0 +1,160 @@
+/* ============================================================
+   RESPONSIVE — desktop → small mobile, zero horizontal overflow
+   ============================================================ */
+
+@media (max-width: 1120px) {
+  #nav,
+  #nav.scrolled {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .footer-inner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  section {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  #hero {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .nav-links {
+    display: none;
+  }
+
+  .nav-cta {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  section {
+    padding: clamp(72px, 12vw, 96px) 22px;
+  }
+
+  #hero {
+    padding: 104px 22px 100px;
+  }
+
+  #nav,
+  #nav.scrolled {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .footer-inner {
+    padding: 44px 22px 28px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+
+  .photo-frame {
+    margin: 0 auto;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .edu-card {
+    grid-template-columns: 1fr;
+  }
+
+  .edu-badge {
+    justify-self: start;
+  }
+
+  .resume-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resume-actions {
+    width: 100%;
+  }
+
+  .resume-actions .btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 680px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-name {
+    font-size: clamp(2.7rem, 13vw, 4rem);
+  }
+
+  .hero-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-btns .btn {
+    width: 100%;
+  }
+
+  .hero-role-line {
+    flex-wrap: wrap;
+    min-height: auto;
+  }
+
+  .stat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .f-row {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .photo-float {
+    right: 4px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-chips .chip {
+    font-size: 0.68rem;
+    padding: 6px 11px;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
+  }
+}

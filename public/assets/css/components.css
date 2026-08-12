@@ -1,0 +1,349 @@
+/* ============================================================
+   COMPONENTS — buttons, badges, cards, chips, form controls,
+   cursor, loader, progress bar
+   ============================================================ */
+
+/* ── Buttons ─────────────────────────────────────────────── */
+
+.btn {
+  --btn-fg: var(--text);
+  --btn-bg: var(--surface);
+  --btn-border: var(--border-hi);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 30px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.32s var(--ease), box-shadow 0.32s var(--ease),
+              border-color 0.32s var(--ease), background-color 0.32s var(--ease);
+}
+
+/* Shine sweep on hover */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: translateX(-120%) skewX(-22deg);
+  background: linear-gradient(100deg, transparent 25%, rgba(255, 255, 255, 0.28) 50%, transparent 75%);
+  transition: transform 0.7s var(--ease);
+}
+
+.btn:hover::after {
+  transform: translateX(120%) skewX(-22deg);
+}
+
+.btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn svg {
+  flex-shrink: 0;
+  transition: transform 0.3s var(--ease);
+}
+
+.btn:hover svg.arrow {
+  transform: translate(3px, -3px);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-primary {
+  --btn-fg: var(--on-primary);
+  --btn-bg: linear-gradient(135deg, var(--primary), var(--secondary));
+  --btn-border: transparent;
+  border: none;
+  box-shadow: 0 4px 26px var(--glow-primary);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 44px var(--glow-primary);
+}
+
+.btn-ghost {
+  --btn-fg: var(--text);
+  --btn-bg: var(--surface);
+  --btn-border: var(--border-hi);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.btn-ghost:hover {
+  --btn-border: var(--primary);
+  color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 0 30px var(--glow-primary);
+  background: var(--primary-soft);
+}
+
+.btn-sm {
+  padding: 9px 18px;
+  font-size: 0.82rem;
+}
+
+/* ── Social icon buttons ─────────────────────────────────── */
+.social-btn {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--muted);
+  background: var(--surface);
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease),
+              color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.social-btn:hover {
+  border-color: var(--secondary);
+  color: var(--secondary);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px var(--glow-secondary);
+  background: var(--secondary-soft);
+}
+
+/* ── Chips (hero meta, tags) ─────────────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 15px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.chip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 8px var(--glow-emerald);
+  flex-shrink: 0;
+}
+
+.chip.is-static::before {
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--glow-primary);
+}
+
+/* ── Generic surface card ────────────────────────────────── */
+.card {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+}
+
+/* ── Theme toggle ────────────────────────────────────────── */
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform 0.3s var(--ease), border-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 22px var(--glow-primary);
+  transform: translateY(-2px) rotate(10deg);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+[data-theme="light"] .theme-toggle .i-sun { display: none; }
+[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+
+/* ── Scroll progress bar ─────────────────────────────────── */
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  z-index: 800;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  box-shadow: 0 0 12px var(--glow-primary);
+  pointer-events: none;
+}
+
+/* ── Loader ──────────────────────────────────────────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  transition: opacity 0.65s var(--ease), visibility 0.65s;
+}
+
+#loader.out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.loader-name {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0;
+  animation: loaderName 0.8s var(--ease) 0.1s forwards;
+}
+
+@keyframes loaderName {
+  from { opacity: 0; transform: translateY(26px); filter: blur(12px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.loader-track {
+  width: 240px;
+  height: 2px;
+  background: var(--loader-track);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.loader-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  border-radius: 99px;
+}
+
+.loader-pct {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--dim);
+  letter-spacing: 0.12em;
+}
+
+/* ── Custom cursor ───────────────────────────────────────── */
+.cursor-outer,
+.cursor-inner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+}
+
+.cursor-outer {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 16px var(--glow-primary);
+  transition: width 0.35s var(--ease), height 0.35s var(--ease),
+              border-color 0.35s, background-color 0.35s, box-shadow 0.35s;
+}
+
+.cursor-inner {
+  width: 5px;
+  height: 5px;
+  background: var(--secondary);
+  box-shadow: 0 0 10px var(--secondary);
+  transition: background 0.3s;
+}
+
+body.cur-hover .cursor-outer {
+  width: 52px;
+  height: 52px;
+  border-color: var(--accent);
+  box-shadow: 0 0 24px var(--glow-accent);
+}
+
+body.cur-hover .cursor-inner {
+  background: var(--accent);
+  transform: scale(1.8);
+}
+
+/* Fine pointer only */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor a,
+  html.has-cursor button,
+  html.has-cursor input,
+  html.has-cursor textarea,
+  html.has-cursor select {
+    cursor: none;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-outer,
+  .cursor-inner {
+    display: none !important;
+  }
+}
+
+/* ── Konami overlay ──────────────────────────────────────── */
+#konami-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  display: none;
+}
+
+#konami-overlay.on {
+  display: block;
+}
+
+#konami-canvas {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,121 @@
+/* ============================================================
+   ANIMATIONS — scroll reveal, tilt glare, reduced motion,
+   performance guards
+   ============================================================ */
+
+/* ── Scroll reveal (JS adds .in) ─────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(38px);
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease),
+    filter 0.8s var(--ease);
+  will-change: opacity, transform;
+}
+
+.reveal[data-reveal="left"] {
+  transform: translateX(-42px);
+}
+
+.reveal[data-reveal="right"] {
+  transform: translateX(42px);
+}
+
+.reveal[data-reveal="scale"] {
+  transform: scale(0.92);
+}
+
+.reveal[data-reveal="blur"] {
+  transform: translateY(24px);
+  filter: blur(8px);
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: translateX(0) translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* Staggered children (e.g. stat cards) */
+.stagger > * {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.7s var(--ease);
+}
+
+.stagger.in > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Tilt glare (exp-cards / tiles set --gx/--gy via JS) ── */
+[data-tilt] {
+  transform-style: preserve-3d;
+  transition: transform 0.18s ease-out;
+}
+
+/* ── Reduced motion: respect the user ────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  .reveal,
+  .reveal[data-reveal],
+  .stagger > *,
+  .badge {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  #loader {
+    display: none !important;
+  }
+
+  #robot-widget {
+    display: none !important;
+  }
+
+  #particle-canvas {
+    display: none !important;
+  }
+
+  .marquee-track {
+    animation: none !important;
+  }
+}
+
+/* ── Paint/CPU guards ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .bg-mesh::before,
+  .bg-mesh::after,
+  .bg-mesh-mid::before {
+    filter: blur(60px);
+  }
+}
+
+/* Battery-saver hint from Chromium */
+@media (prefers-reduced-data: reduce) {
+  #robot-widget {
+    display: none !important;
+  }
+}
+
+/* Hidden-while-loading images (soft reveal, no layout shift) */
+img[loading="lazy"] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}

@@ -1,53 +1,80 @@
 /**
- * Site-wide UI behaviour: loading screen, custom cursor, hero typing
- * effect, scroll-reveal animations, card tilt, nav scroll state, mobile
- * menu, smooth in-page scrolling, and the Konami-code easter egg.
+ * Site-wide UI behaviour: loading screen (with progress counter),
+ * custom cursor, hero typing effect, 3D tilt + glare, nav scroll
+ * state, scroll-progress bar, mobile menu, smooth scrolling and the
+ * Konami-code easter egg. Scroll-reveal lives in reveal.js, the
+ * theme toggle in theme.js, and the hero particles in particles.js.
  */
 (function () {
   'use strict';
 
-  /* ── LOADING SCREEN ── */
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const loader = document.getElementById('loader');
-      if (!loader) return;
-      loader.classList.add('out');
-      loader.addEventListener('transitionend', () => loader.remove(), { once: true });
-    }, 1200);
-  });
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  /* ── CUSTOM CURSOR ── */
-  const co = document.getElementById('co');
-  const ci = document.getElementById('ci');
-  if (co && ci) {
-    let mx = -200, my = -200, ox = -200, oy = -200;
+  /* ── LOADING SCREEN (skipped entirely for reduced-motion users) ── */
+  var loader = document.getElementById('loader');
+  if (loader) {
+    if (REDUCED) {
+      loader.remove();
+    } else {
+      var bar = loader.querySelector('.loader-bar');
+      var pct = loader.querySelector('.loader-pct');
+      var progress = 0;
+      var LOADER_DURATION = 1000; // ms
 
-    document.addEventListener('mousemove', (e) => {
+      var start = performance.now();
+      (function tick(now) {
+        var elapsed = now - start;
+        progress = Math.min(100, (elapsed / LOADER_DURATION) * 100);
+        if (bar) bar.style.width = progress + '%';
+        if (pct) pct.textContent = Math.round(progress) + '%';
+
+        if (elapsed < LOADER_DURATION) {
+          requestAnimationFrame(tick);
+        } else {
+          setTimeout(function () {
+            loader.classList.add('out');
+            loader.addEventListener('transitionend', function () { loader.remove(); }, { once: true });
+          }, 180);
+        }
+      })(start);
+    }
+  }
+
+  /* ── CUSTOM CURSOR (fine pointers only) ── */
+  var co = document.getElementById('co');
+  var ci = document.getElementById('ci');
+  if (FINE_POINTER && co && ci) {
+    document.documentElement.classList.add('has-cursor');
+
+    var mx = -200, my = -200, ox = -200, oy = -200;
+
+    document.addEventListener('mousemove', function (e) {
       mx = e.clientX; my = e.clientY;
-      ci.style.transform = `translate(${mx - 2.5}px,${my - 2.5}px)`;
+      ci.style.transform = 'translate(' + (mx - 2.5) + 'px,' + (my - 2.5) + 'px)';
     }, { passive: true });
 
     (function moveCursor() {
       ox += (mx - ox) * 0.11;
       oy += (my - oy) * 0.11;
-      co.style.transform = `translate(${ox - 18}px,${oy - 18}px)`;
+      co.style.transform = 'translate(' + (ox - 18) + 'px,' + (oy - 18) + 'px)';
       requestAnimationFrame(moveCursor);
     })();
 
-    document.querySelectorAll('a,button,input,textarea,.badge,.stat-card,.cert-card,.exp-card,.c-link').forEach((el) => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('cur-hover'), { passive: true });
-      el.addEventListener('mouseleave', () => document.body.classList.remove('cur-hover'), { passive: true });
+    document.querySelectorAll('a, button, input, textarea, select, .badge, .stat-card, .cert-card, .exp-card, .c-link').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { document.body.classList.add('cur-hover'); }, { passive: true });
+      el.addEventListener('mouseleave', function () { document.body.classList.remove('cur-hover'); }, { passive: true });
     });
   }
 
   /* ── TYPING EFFECT ── */
-  const roles = ['Software Engineer', 'DevOps Engineer', 'Cloud Engineer', 'Full-Stack Developer'];
-  const typedEl = document.getElementById('typed');
-  if (typedEl) {
-    let roleIndex = 0, charIndex = 0, deleting = false;
+  var roles = ['Software Engineer', 'DevOps Engineer', 'Cloud Engineer', 'Full-Stack Developer'];
+  var typedEl = document.getElementById('typed');
+  if (typedEl && !REDUCED) {
+    var roleIndex = 0, charIndex = 0, deleting = false;
 
     function type() {
-      const current = roles[roleIndex];
+      var current = roles[roleIndex];
       if (deleting) {
         typedEl.textContent = current.slice(0, --charIndex);
         if (charIndex === 0) {
@@ -61,7 +88,7 @@
       }
       typedEl.textContent = current.slice(0, ++charIndex);
       if (charIndex === current.length) {
-        setTimeout(() => { deleting = true; type(); }, 2300);
+        setTimeout(function () { deleting = true; type(); }, 2300);
         return;
       }
       setTimeout(type, 78);
@@ -69,109 +96,139 @@
     setTimeout(type, 1600);
   }
 
-  /* ── SCROLL REVEAL ── */
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('in');
-      if (entry.target.classList.contains('skill-cat')) {
-        entry.target.querySelectorAll('.badge').forEach((badge, i) => {
-          badge.style.transition = `opacity 0.42s ease ${i * 0.055}s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.055}s`;
-          setTimeout(() => badge.classList.add('pop'), i * 55);
-        });
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -55px 0px' });
-  document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
-
-  /* ── 3D TILT ── */
-  document.querySelectorAll('[data-tilt]').forEach((card) => {
-    card.addEventListener('mousemove', (e) => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      card.style.transform = `perspective(900px) rotateY(${x * 9}deg) rotateX(${-y * 9}deg) translateZ(6px)`;
+  /* ── 3D TILT + CURSOR GLARE ── */
+  document.querySelectorAll('[data-tilt]').forEach(function (card) {
+    card.addEventListener('mousemove', function (e) {
+      var r = card.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transition = 'transform 0.08s linear';
+      card.style.transform = 'perspective(900px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 8) + 'deg) translateZ(4px)';
+      card.style.setProperty('--gx', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--gy', ((e.clientY - r.top) / r.height * 100) + '%');
     }, { passive: true });
-    card.addEventListener('mouseleave', () => {
+
+    card.addEventListener('mouseleave', function () {
+      card.style.transition = 'transform 0.55s cubic-bezier(0.23, 1, 0.32, 1)';
       card.style.transform = 'perspective(900px) rotateY(0) rotateX(0) translateZ(0)';
     });
   });
 
-  /* ── NAV SCROLL + ACTIVE LINK ── */
-  const nav = document.getElementById('nav');
-  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-  const sections = document.querySelectorAll('section[id]');
-  let scrollTick = false;
+  /* ── NAV SCROLL STATE + ACTIVE LINK + SCROLL PROGRESS ── */
+  var nav = document.getElementById('nav');
+  var progress = document.getElementById('progress');
+  var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  var sections = document.querySelectorAll('section[id]');
+  var scrollTick = false;
 
-  window.addEventListener('scroll', () => {
+  window.addEventListener('scroll', function () {
     if (scrollTick) return;
     scrollTick = true;
-    requestAnimationFrame(() => {
-      nav.classList.toggle('scrolled', window.scrollY > 60);
-      let current = '';
-      sections.forEach((s) => { if (window.scrollY >= s.offsetTop - 130) current = s.id; });
-      navLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === `#${current}`));
+    requestAnimationFrame(function () {
+      var y = window.scrollY;
+      nav.classList.toggle('scrolled', y > 60);
+
+      if (progress) {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
+      }
+
+      var current = '';
+      sections.forEach(function (s) { if (y >= s.offsetTop - 140) current = s.id; });
+      navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+
       scrollTick = false;
     });
   }, { passive: true });
 
   /* ── MOBILE MENU ── */
-  const burger = document.getElementById('burger');
-  const mobMenu = document.getElementById('mob-menu');
+  var burger = document.getElementById('burger');
+  var mobMenu = document.getElementById('mob-menu');
+  var mobClose = document.getElementById('mob-close');
+
+  function closeMenu() {
+    burger.classList.remove('open');
+    mobMenu.classList.remove('open');
+    mobMenu.setAttribute('aria-hidden', 'true');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Open menu');
+    document.body.classList.remove('menu-open');
+  }
+
   if (burger && mobMenu) {
-    burger.addEventListener('click', () => {
-      burger.classList.toggle('open');
-      mobMenu.classList.toggle('open');
+    burger.addEventListener('click', function () {
+      var isOpen = mobMenu.classList.contains('open');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        burger.classList.add('open');
+        mobMenu.classList.add('open');
+        mobMenu.setAttribute('aria-hidden', 'false');
+        burger.setAttribute('aria-expanded', 'true');
+        burger.setAttribute('aria-label', 'Close menu');
+        document.body.classList.add('menu-open');
+      }
     });
-    mobMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
-      burger.classList.remove('open');
-      mobMenu.classList.remove('open');
-    }));
+
+    if (mobClose) mobClose.addEventListener('click', closeMenu);
+
+    mobMenu.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mobMenu.classList.contains('open')) closeMenu();
+    });
   }
 
   /* ── SMOOTH SCROLL ── */
-  document.querySelectorAll('a[href^="#"]').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      if (REDUCED) {
+        target.scrollIntoView({ block: 'start' });
+      } else {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   });
 
   /* ── KONAMI CODE ── */
-  const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-  let konamiIndex = 0;
-  document.addEventListener('keydown', (e) => {
+  var KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  var konamiIndex = 0;
+  document.addEventListener('keydown', function (e) {
     konamiIndex = e.key === KONAMI[konamiIndex] ? konamiIndex + 1 : 0;
     if (konamiIndex === KONAMI.length) { konamiIndex = 0; launchKonami(); }
   });
 
   function launchKonami() {
-    const overlay = document.getElementById('konami-overlay');
-    const canvas = document.getElementById('konami-canvas');
+    var overlay = document.getElementById('konami-overlay');
+    var canvas = document.getElementById('konami-canvas');
     if (!overlay || !canvas) return;
-    const kx = canvas.getContext('2d');
+    var kx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     overlay.classList.add('on');
 
-    const COLORS = ['#7c6cf7', '#22d3ee', '#fb7185', '#fbbf24', '#f97316', '#34d399'];
-    let particles = Array.from({ length: 320 }, () => ({
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
-      vx: (Math.random() - 0.5) * 22,
-      vy: (Math.random() - 0.5) * 22 - 9,
-      r: Math.random() * 7 + 2,
-      c: COLORS[Math.floor(Math.random() * COLORS.length)],
-      a: 1,
-      g: 0.3 + Math.random() * 0.25,
-    }));
+    var colors = ['#7c6cf7', '#22d3ee', '#fb7185', '#fbbf24', '#f97316', '#34d399'];
+    var particles = Array.from({ length: 320 }, function () {
+      return {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        vx: (Math.random() - 0.5) * 22,
+        vy: (Math.random() - 0.5) * 22 - 9,
+        r: Math.random() * 7 + 2,
+        c: colors[Math.floor(Math.random() * colors.length)],
+        a: 1,
+        g: 0.3 + Math.random() * 0.25,
+      };
+    });
 
     (function animate() {
       kx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
+      particles.forEach(function (p) {
         p.x += p.vx; p.y += p.vy; p.vy += p.g; p.vx *= 0.99; p.a -= 0.014;
         if (p.a > 0) {
           kx.globalAlpha = p.a;
@@ -184,15 +241,15 @@
         }
       });
       kx.globalAlpha = 1;
-      particles = particles.filter((p) => p.a > 0);
+      particles = particles.filter(function (p) { return p.a > 0; });
       if (particles.length) requestAnimationFrame(animate);
       else overlay.classList.remove('on');
     })();
 
-    const toast = Object.assign(document.createElement('div'), {
-      innerHTML: `<div style="font-size:2.8rem;margin-bottom:10px">🎮</div>
-      <div style="font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#7c6cf7,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">+30 Lives Unlocked!</div>
-      <div style="font-size:0.85rem;color:rgba(255,255,255,0.55);margin-top:7px">Easter egg found 🥚</div>`,
+    var toast = Object.assign(document.createElement('div'), {
+      innerHTML: '<div style="font-size:2.8rem;margin-bottom:10px">🎮</div>' +
+        '<div style="font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#7c6cf7,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">+30 Lives Unlocked!</div>' +
+        '<div style="font-size:0.85rem;color:rgba(255,255,255,0.55);margin-top:7px">Easter egg found 🥚</div>',
     });
     Object.assign(toast.style, {
       position: 'fixed', top: '50%', left: '50%',
@@ -201,6 +258,6 @@
       fontFamily: "'Space Grotesk',sans-serif", color: '#fff',
     });
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3200);
+    setTimeout(function () { toast.remove(); }, 3200);
   }
 })();
