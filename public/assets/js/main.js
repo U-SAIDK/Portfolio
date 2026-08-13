@@ -123,12 +123,28 @@
     });
   });
 
-  /* ── NAV SCROLL STATE + ACTIVE LINK + SCROLL PROGRESS ── */
+  /* ── NAV SCROLL STATE + ACTIVE LINK + SCROLL PROGRESS + HIDE-ON-SCROLL ──
+     Hide-on-scroll-down / show-on-scroll-up shares the same rAF-throttled
+     scroll handler below rather than adding a second listener. `navRefY`
+     only advances when we actually cross the dead-zone (DIR_DELTA) or hit
+     the top threshold — comparing every frame's tiny delta instead would
+     mean a slow, continuous scroll never accumulates enough per-frame
+     movement to trigger a hide. */
   var nav = document.getElementById('nav');
   var progress = document.getElementById('progress');
   var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
   var sections = document.querySelectorAll('section[id]');
   var scrollTick = false;
+  var navRefY = window.scrollY;
+  var navHidden = false;
+  var TOP_THRESHOLD = 80;  // always visible above this — "very top" per spec
+  var DIR_DELTA = 10;      // dead-zone so small jitter can't flip state
+
+  function setNavHidden(hidden) {
+    if (navHidden === hidden) return;
+    navHidden = hidden;
+    nav.classList.toggle('nav-hidden', hidden);
+  }
 
   window.addEventListener('scroll', function () {
     if (scrollTick) return;
@@ -142,6 +158,25 @@
         progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
       }
 
+      // Never hide while the mobile menu is open — the close button lives
+      // inside #nav.
+      if (document.body.classList.contains('menu-open')) {
+        setNavHidden(false);
+        navRefY = y;
+      } else if (y <= TOP_THRESHOLD) {
+        setNavHidden(false);
+        navRefY = y;
+      } else {
+        var delta = y - navRefY;
+        if (delta > DIR_DELTA) {
+          setNavHidden(true);
+          navRefY = y;
+        } else if (delta < -DIR_DELTA) {
+          setNavHidden(false);
+          navRefY = y;
+        }
+      }
+
       var current = '';
       sections.forEach(function (s) { if (y >= s.offsetTop - 140) current = s.id; });
       navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
@@ -149,6 +184,10 @@
       scrollTick = false;
     });
   }, { passive: true });
+
+  // Keyboard users tabbing into the nav (e.g. from a skip link) should
+  // always be able to see what they've focused, even mid-scroll.
+  nav.addEventListener('focusin', function () { setNavHidden(false); });
 
   /* ── MOBILE MENU ── */
   var burger = document.getElementById('burger');

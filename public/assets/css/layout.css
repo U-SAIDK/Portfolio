@@ -15,7 +15,8 @@
   justify-content: space-between;
   gap: 20px;
   transition: padding 0.4s var(--ease), background-color 0.4s var(--ease),
-              border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+              border-color 0.4s var(--ease), box-shadow 0.4s var(--ease),
+              transform 0.35s var(--ease), opacity 0.3s var(--ease);
 }
 
 #nav.scrolled {
@@ -25,6 +26,16 @@
   -webkit-backdrop-filter: blur(28px);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-1);
+}
+
+/* Hide-on-scroll-down / show-on-scroll-up (main.js). Transform + opacity
+   only — #nav is already position:fixed (out of flow), so hiding it never
+   shifts any other element's layout. pointer-events:none keeps the
+   invisible bar from swallowing hover/clicks while it's off-screen. */
+#nav.nav-hidden {
+  transform: translateY(-130%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .nav-logo {
