@@ -19,15 +19,24 @@
     } else {
       var bar = loader.querySelector('.loader-bar');
       var pct = loader.querySelector('.loader-pct');
-      var progress = 0;
+      // Named loadPct (not `progress`) — this whole file is one IIFE and
+      // `var` is function-scoped, not block-scoped, so a same-named
+      // `progress` declared later (the #progress scroll-bar element, in
+      // the nav scroll handler below) would hoist into this same scope
+      // and collide with it. That collision is exactly what caused
+      // "Cannot set properties of undefined (setting 'width')": whichever
+      // rAF tick ran last — this loader tick (a number) or the scroll
+      // handler (a DOM element) — silently overwrote the other's value in
+      // the single shared variable.
+      var loadPct = 0;
       var LOADER_DURATION = 1000; // ms
 
       var start = performance.now();
       (function tick(now) {
         var elapsed = now - start;
-        progress = Math.min(100, (elapsed / LOADER_DURATION) * 100);
-        if (bar) bar.style.width = progress + '%';
-        if (pct) pct.textContent = Math.round(progress) + '%';
+        loadPct = Math.min(100, (elapsed / LOADER_DURATION) * 100);
+        if (bar) bar.style.width = loadPct + '%';
+        if (pct) pct.textContent = Math.round(loadPct) + '%';
 
         if (elapsed < LOADER_DURATION) {
           requestAnimationFrame(tick);
