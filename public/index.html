@@ -1078,7 +1078,7 @@
             <span class="f-error" id="f-msg-error"></span>
           </div>
           <div class="f-turnstile-wrap">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAADQg9h4a_7H8KQHY" data-expired-callback="handleTurnstileExpired" data-error-callback="handleTurnstileExpired"></div>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAADQg9h4a_7H8KQHY"></div>
           </div>
           <button type="submit" class="f-submit">
             <span class="f-submit-label">Send Message</span>
@@ -1151,7 +1151,11 @@
   <!-- =============================================
        JAVASCRIPT
        ============================================= -->
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <!-- Not async/defer — must run and define window.onTurnstileLoad before
+       the (async) Turnstile script below can possibly call it. -->
+  <script src="assets/js/turnstile-init.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit" async defer
+    onerror="window.onTurnstileScriptError && window.onTurnstileScriptError()"></script>
   <script src="assets/js/theme.js" defer></script>
   <script src="assets/js/particles.js" defer></script>
   <script src="assets/js/reveal.js" defer></script>

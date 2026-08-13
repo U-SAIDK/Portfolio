@@ -67,14 +67,21 @@
     else statusEl.removeAttribute('data-state');
   }
 
-  // Turnstile tokens expire a few minutes after being issued. Visitors who
-  // take a while filling out the form can end up submitting an already-dead
-  // token, which Cloudflare rejects as "timeout-or-duplicate". The widget's
-  // data-expired-callback/data-error-callback (in index.html) call this so
-  // a fresh token is ready by the time they actually click submit.
-  window.handleTurnstileExpired = function () {
-    if (window.turnstile) window.turnstile.reset();
-  };
+  // Turnstile's own lifecycle (render, token, expiry, reset) is owned by
+  // turnstile-init.js — loaded earlier, before Turnstile's script, so it
+  // can never race it. This form only ever reads its state through these
+  // three functions; it never touches window.turnstile directly.
+  function turnstileToken() {
+    return typeof window.getTurnstileToken === 'function' ? window.getTurnstileToken() : '';
+  }
+
+  function turnstileState() {
+    return typeof window.getTurnstileState === 'function' ? window.getTurnstileState() : 'unavailable';
+  }
+
+  function turnstileReset() {
+    if (typeof window.resetTurnstile === 'function') window.resetTurnstile();
+  }
 
   function setLoading(isLoading) {
     submitBtn.disabled = isLoading;
@@ -102,9 +109,22 @@
       return;
     }
 
-    const token = document.querySelector('[name="cf-turnstile-response"]')?.value;
+    const token = turnstileToken();
     if (!token) {
-      setStatus('Please complete the verification challenge above.', 'error');
+      // Still a hard stop — the form never submits without a real token —
+      // just an accurate reason instead of "complete the challenge above"
+      // (Turnstile is an automated, mostly-invisible check; there is
+      // nothing for the visitor to manually solve, and no challenge was
+      // ever shown to fail to complete).
+      const state = turnstileState();
+      const message = state === 'unavailable'
+        ? 'Security verification could not be loaded. Please refresh the page and try again.'
+        : state === 'error'
+          ? 'Security verification failed. Please refresh the page and try again.'
+          : state === 'loading'
+            ? 'Security verification is loading…'
+            : 'Verifying…';
+      setStatus(message, 'error');
       return;
     }
 
@@ -144,7 +164,7 @@
       setStatus('Thanks — I\'ll get back to you within 24 hours.', 'success');
       form.reset();
       clearErrors();
-      if (window.turnstile) window.turnstile.reset();
+      turnstileReset();
 
       setTimeout(() => {
         submitBtn.classList.remove('is-success');
@@ -160,7 +180,7 @@
       // tokens are single-use, so without this the *same* dead token gets
       // resubmitted on every retry and fails forever with "timeout-or-duplicate"
       // until the page is reloaded.
-      if (window.turnstile) window.turnstile.reset();
+      turnstileReset();
 
       setTimeout(() => {
         submitBtn.classList.remove('is-error');
