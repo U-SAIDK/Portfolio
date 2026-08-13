@@ -2,6 +2,22 @@
    BACKGROUND — animated mesh blobs, engineering grid, noise
    ============================================================ */
 
+/* — Light-theme page wash — a faint warm-to-cool diagonal tint behind
+   everything so the page reads as an intentional surface instead of flat
+   white. Fixed (not scrolled) and purely decorative; dark theme is left
+   untouched since its mesh blobs already carry that depth. — */
+[data-theme="light"] body {
+  /* Not background-attachment:fixed — that property repaints on every
+     scroll frame on many mobile browsers (notably iOS Safari), which is
+     exactly the "expensive continuous effect" mobile performance work
+     here is meant to avoid. A normal (scrolling) background costs nothing
+     extra since it's painted once. */
+  background:
+    radial-gradient(ellipse 70% 40% at 14% 0%, var(--wash-cool), transparent 60%),
+    radial-gradient(ellipse 60% 36% at 100% 14%, var(--wash-warm), transparent 60%),
+    var(--bg);
+}
+
 /* — Global film-grain noise (very subtle) — */
 body::after {
   content: '';

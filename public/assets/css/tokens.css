@@ -53,7 +53,7 @@
   --text: #0d1130;
   --text-2: #2a3050;
   --muted: #4c5572;
-  --dim: #8b93ab;
+  --dim: #5b6384;
 
   /* — Tinted fills (soft variants of the brand colours) — */
   --primary-soft: rgba(99, 85, 224, 0.09);
@@ -88,6 +88,12 @@
   --mesh-b: rgba(10, 162, 192, 0.14);
   --mesh-c: rgba(224, 86, 111, 0.10);
   --grid-line: rgba(23, 28, 60, 0.05);
+
+  /* — Page wash (light theme only — a faint warm/cool tint so the page
+     reads as a considered surface rather than flat white; dark theme
+     keeps a solid --bg since the mesh blobs already carry its depth) — */
+  --wash-warm: rgba(224, 86, 111, 0.045);
+  --wash-cool: rgba(10, 162, 192, 0.05);
 
   /* — Hero name gradient — */
   --hero-name-1: #10142b;

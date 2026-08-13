@@ -12,6 +12,12 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keeps anchor targets (nav links, CTA buttons) from landing behind the
+     fixed navbar — respected by both native anchor jumps and
+     scrollIntoView() in main.js. Tuned to the navbar's scrolled-state
+     height plus a little breathing room; see responsive.css for the
+     smaller-navbar mobile value. */
+  scroll-padding-top: 88px;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
   font-family: var(--font-body);

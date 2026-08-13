@@ -48,6 +48,25 @@
 }
 
 @media (max-width: 860px) {
+  html {
+    scroll-padding-top: 76px;
+  }
+
+  /* backdrop-filter is one of the costliest properties to paint on
+     low-end/Android GPUs — keep the frosted-glass look but at a
+     fraction of the blur radius so scrolling under the navbar and
+     opening the mobile menu stay smooth on weaker devices. */
+  #nav.scrolled,
+  .btn-ghost {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  #mob-menu {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
   section {
     padding: clamp(72px, 12vw, 96px) 22px;
   }

@@ -11,21 +11,55 @@
   <meta name="author" content="Usaid Khan">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#f5f6fb">
+  <link rel="canonical" href="https://usaidkhan.netlify.app/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://usaidkhan.netlify.app/">
   <meta property="og:title" content="Usaid Khan — Software Engineer">
   <meta property="og:description"
     content="Java microservices, DevOps automation, Kubernetes and cloud infrastructure. Based in Pune, India.">
-  <meta property="og:image" content="usaid.webp">
+  <meta property="og:image" content="https://usaidkhan.netlify.app/usaid.webp">
   <meta property="og:image:alt" content="Usaid Khan — Software Engineer">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://usaidkhan.netlify.app/">
   <meta name="twitter:title" content="Usaid Khan — Software Engineer">
   <meta name="twitter:description"
     content="Java microservices, DevOps automation, Kubernetes and cloud infrastructure.">
-  <meta name="twitter:image" content="usaid.webp">
+  <meta name="twitter:image" content="https://usaidkhan.netlify.app/usaid.webp">
+
+  <!-- Structured data (Person) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Usaid Khan",
+    "url": "https://usaidkhan.netlify.app/",
+    "image": "https://usaidkhan.netlify.app/usaid.webp",
+    "jobTitle": "Software Engineer",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Data Innovations Technologies Pvt. Ltd"
+    },
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "Savitribai Phule Pune University"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Pune",
+      "addressRegion": "Maharashtra",
+      "addressCountry": "IN"
+    },
+    "email": "mailto:usaidk.tech@gmail.com",
+    "sameAs": [
+      "https://linkedin.com/in/tousaidkhan/",
+      "https://github.com/U-SAIDK"
+    ]
+  }
+  </script>
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,9 +82,21 @@
   </script>
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Loaded as sibling <link> tags (not @import) so the browser fetches
+       all eight stylesheets in parallel instead of a serial @import chain
+       — @import can only be discovered after style.css itself downloads
+       and parses, adding a full extra round-trip before any CSS applies. -->
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/background.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/sections.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
 </head>
 
 <body>

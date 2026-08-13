@@ -14,6 +14,10 @@
 (function () {
   'use strict';
   if (window.innerWidth < 1100) return;
+  // CSS already hides #robot-widget under reduced-motion (animations.css),
+  // but without this the full Three.js scene would still load and render
+  // invisibly — wasted bandwidth, CPU and battery for zero visible result.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var widget = document.getElementById('robot-widget');
   if (!widget) return;
