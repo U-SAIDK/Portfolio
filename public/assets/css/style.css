@@ -1,13 +1,7 @@
 /* ============================================================
-   style.css — NOT linked from index.html.
-
-   index.html links the eight files below directly as sibling
-   <link rel="stylesheet"> tags (in this same order) so the browser
-   fetches them in parallel instead of discovering them one-by-one
-   through this file's @import chain, which costs an extra
-   round-trip per file. This file is kept only as a single-file
-   reference of the full cascade order for editors/tooling that
-   want one entry point — edit the individual files, not this one.
+   style.css — entry point for the redesigned design system.
+   Import order matters: tokens → base → background → components
+   → layout → sections → animations → responsive.
    ============================================================ */
 
 @import url('tokens.css');
