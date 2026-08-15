@@ -111,9 +111,19 @@
   settings = resolveSettings(quality);
 
   /* ============================================================
-     THEME COLORS — mirrors particles.js's existing approach: read the
-     live CSS custom properties so light/dark (and the toggle animation
-     between them) are automatically respected with zero hardcoded color.
+     THEME COLORS — reads --field-a/b/c rather than --primary/--secondary/
+     --accent directly. Those brand tokens are tuned for solid fills
+     (buttons, text) where alpha-blending never comes into play; a
+     particle field alpha-composites color onto the page background every
+     frame, and the same alpha value reads far weaker blended onto a
+     near-white surface than onto a near-black one (the result's
+     luminance sits close to the light bg's luminance either way). The
+     --field-* tokens are dedicated, deliberately darker/richer hues for
+     light mode specifically (aliases of the brand colors in dark mode,
+     where the contrast problem doesn't exist) — see tokens.css.
+     --field-contrast is a companion alpha multiplier applied everywhere
+     below that computes an alpha (particles, connections, trail,
+     ripples), also 1 in dark mode and >1 in light mode.
      ============================================================ */
   function hexToRgb(hex, fallback) {
     var value = String(hex || '').trim();
@@ -127,15 +137,22 @@
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
     return {
-      primary: hexToRgb(cs.getPropertyValue('--primary'), [124, 108, 247]),
-      secondary: hexToRgb(cs.getPropertyValue('--secondary'), [34, 211, 238]),
-      accent: hexToRgb(cs.getPropertyValue('--accent'), [251, 113, 133]),
+      primary: hexToRgb(cs.getPropertyValue('--field-a'), [124, 108, 247]),
+      secondary: hexToRgb(cs.getPropertyValue('--field-b'), [34, 211, 238]),
+      accent: hexToRgb(cs.getPropertyValue('--field-c'), [251, 113, 133]),
     };
   }
 
+  function readContrast() {
+    var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--field-contrast'));
+    return isFinite(v) && v > 0 ? v : 1;
+  }
+
   var colors = readColors();
+  var fieldContrast = readContrast();
   document.documentElement.addEventListener('uk-themechange', function () {
     colors = readColors();
+    fieldContrast = readContrast();
   });
 
   /* ============================================================
@@ -257,7 +274,11 @@
       vx: 0, vy: 0,
       depth: depth,
       radius: lerp(settings.particleRadius[0], settings.particleRadius[1], depth),
-      alpha: lerp(settings.particleAlpha[0], settings.particleAlpha[1], depth),
+      // Base alpha only — fieldContrast is applied at draw time (not
+      // baked in here) so a theme toggle recolors/recontrasts existing
+      // particles immediately instead of only affecting ones created
+      // after the switch.
+      alphaBase: lerp(settings.particleAlpha[0], settings.particleAlpha[1], depth),
       reactivity: lerp(0.5, 1.2, depth),      // foreground reacts more to the cursor
       noiseFactor: lerp(1.3, 0.7, depth),     // background drifts more on its own
       group: Math.random() < settings.attractFraction ? 'attract' : 'repel',
@@ -361,7 +382,7 @@
     for (var i = 0; i < trail.length; i++) {
       var pt = trail[i];
       var age = (now - pt.t) / settings.trailMaxAge;
-      var a = (1 - age) * 0.35;
+      var a = Math.min(0.9, (1 - age) * 0.35 * fieldContrast);
       if (a <= 0) continue;
       ctx.beginPath();
       ctx.arc(pt.x, pt.y, lerp(3.2, 0.4, age), 0, Math.PI * 2);
@@ -402,7 +423,7 @@
       var t = age / settings.rippleDuration;
       ctx.beginPath();
       ctx.arc(rp.x, rp.y, t * settings.rippleMaxRadius, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(' + colors.primary.join(',') + ',' + ((1 - t) * 0.35) + ')';
+      ctx.strokeStyle = 'rgba(' + colors.primary.join(',') + ',' + (Math.min(0.9, (1 - t) * 0.35 * fieldContrast)) + ')';
       ctx.lineWidth = 1.4;
       ctx.stroke();
     }
@@ -414,7 +435,7 @@
   function drawParticle(p) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(' + p.color + ',' + p.alpha + ')';
+    ctx.fillStyle = 'rgba(' + p.color + ',' + Math.min(0.95, p.alphaBase * fieldContrast) + ')';
     ctx.fill();
   }
 
@@ -434,7 +455,7 @@
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
           ctx.strokeStyle = 'rgba(' + colors.primary.join(',') + ',' +
-            ((1 - d / settings.connectDistance) * settings.connectAlpha * depthAvg) + ')';
+            (Math.min(0.85, (1 - d / settings.connectDistance) * settings.connectAlpha * depthAvg * fieldContrast)) + ')';
           ctx.lineWidth = 0.6;
           ctx.stroke();
         }

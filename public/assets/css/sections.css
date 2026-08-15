@@ -29,6 +29,19 @@
   pointer-events: none;
 }
 
+/* Light-mode-only atmospheric glow behind the field/robot — a canvas
+   element's CSS background paints behind whatever it draws on top, so
+   this needs no extra element and can never affect the physics/pointer
+   layer. Positioned toward the robot's side (right) and restrained —
+   the robot stays the focal point, this just gives it an environment
+   instead of flat white. Dark mode is untouched (its .bg-mesh blobs
+   already provide this depth). */
+[data-theme="light"] #particle-canvas {
+  background:
+    radial-gradient(ellipse 46% 60% at 78% 46%, color-mix(in srgb, var(--field-a) 12%, transparent), transparent 70%),
+    radial-gradient(ellipse 38% 50% at 88% 66%, color-mix(in srgb, var(--field-c) 10%, transparent), transparent 70%);
+}
+
 .hero-body {
   position: relative;
   z-index: 2;

@@ -15,6 +15,7 @@
   background:
     radial-gradient(ellipse 70% 40% at 14% 0%, var(--wash-cool), transparent 60%),
     radial-gradient(ellipse 60% 36% at 100% 14%, var(--wash-warm), transparent 60%),
+    radial-gradient(ellipse 55% 45% at 50% 100%, var(--wash-violet), transparent 65%),
     var(--bg);
 }
 
