@@ -22,6 +22,11 @@
   inset: 0;
   z-index: 0;
   opacity: 0.9;
+  /* Defensive: the field is a pure visual layer (hero-field.js reads
+     pointer position from window/document, never hit-tests the canvas
+     itself) — this guarantees it can never intercept clicks on the
+     robot, hero buttons, or anything else stacked above it. */
+  pointer-events: none;
 }
 
 .hero-body {

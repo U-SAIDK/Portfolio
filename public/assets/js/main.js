@@ -3,7 +3,8 @@
  * custom cursor, hero typing effect, 3D tilt + glare, nav scroll
  * state, scroll-progress bar, mobile menu, smooth scrolling and the
  * Konami-code easter egg. Scroll-reveal lives in reveal.js, the
- * theme toggle in theme.js, and the hero particles in particles.js.
+ * theme toggle in theme.js, and the hero interactive field in
+ * hero-field.js.
  */
 (function () {
   'use strict';
