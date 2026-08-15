@@ -55,30 +55,48 @@
   --muted: #4c5572;
   --dim: #5b6384;
 
-  /* — Tinted fills (soft variants of the brand colours) — */
-  --primary-soft: rgba(99, 85, 224, 0.09);
-  --primary-soft-2: rgba(99, 85, 224, 0.16);
-  --secondary-soft: rgba(10, 162, 192, 0.09);
-  --accent-soft: rgba(224, 86, 111, 0.09);
-  --emerald-soft: rgba(15, 157, 88, 0.10);
+  /* — Tinted fills (soft variants of the brand colours) — boosted vs.
+     dark theme's equivalents because the same alpha value reads much
+     weaker blended onto a near-white surface than onto a near-black one
+     (the blended result's luminance sits much closer to the light bg's
+     luminance — this is the same reason the light-mode particle field
+     needed its own contrast treatment below, not a coincidence). — */
+  --primary-soft: rgba(99, 85, 224, 0.13);
+  --primary-soft-2: rgba(99, 85, 224, 0.22);
+  --secondary-soft: rgba(10, 162, 192, 0.13);
+  --accent-soft: rgba(224, 86, 111, 0.13);
+  --emerald-soft: rgba(15, 157, 88, 0.14);
   --success-soft: rgba(15, 157, 88, 0.12);
   --danger-soft: rgba(217, 48, 37, 0.10);
 
   /* — Glows (shadows cast by brand colours) — */
-  --glow-primary: rgba(99, 85, 224, 0.18);
-  --glow-secondary: rgba(10, 162, 192, 0.15);
-  --glow-accent: rgba(224, 86, 111, 0.14);
-  --glow-emerald: rgba(15, 157, 88, 0.16);
+  --glow-primary: rgba(99, 85, 224, 0.22);
+  --glow-secondary: rgba(10, 162, 192, 0.19);
+  --glow-accent: rgba(224, 86, 111, 0.17);
+  --glow-emerald: rgba(15, 157, 88, 0.20);
 
   /* — Feedback — */
   --success: #0f9d58;
   --danger: #d93025;
   --on-primary: #ffffff;
 
-  /* — Shadows — */
-  --shadow-1: 0 1px 2px rgba(23, 28, 60, 0.06), 0 10px 26px rgba(23, 28, 60, 0.07);
-  --shadow-2: 0 2px 5px rgba(23, 28, 60, 0.07), 0 22px 52px rgba(23, 28, 60, 0.12);
-  --shadow-3: 0 4px 10px rgba(23, 28, 60, 0.08), 0 36px 88px rgba(23, 28, 60, 0.17);
+  /* — Shadows — deepened slightly over the original pass so cards read
+     as clearly elevated rather than "flat white on flat white". — */
+  --shadow-1: 0 1px 2px rgba(23, 28, 60, 0.08), 0 10px 26px rgba(23, 28, 60, 0.09);
+  --shadow-2: 0 2px 5px rgba(23, 28, 60, 0.09), 0 22px 52px rgba(23, 28, 60, 0.15);
+  --shadow-3: 0 4px 10px rgba(23, 28, 60, 0.10), 0 36px 88px rgba(23, 28, 60, 0.20);
+
+  /* — Interactive field (hero-field.js) — dedicated, deliberately darker/
+     richer particle hues than --primary/--secondary/--accent (which are
+     tuned for solid fills like buttons, not for alpha-blending against a
+     light background) plus a contrast multiplier the field applies to
+     every alpha value it computes (particles, connections, trail,
+     ripples). This is the fix for light-mode particles being hard to
+     see — not a new color scheme, a contrast correction. — */
+  --field-a: #4c3fc7;     /* deep indigo — primary particle hue */
+  --field-b: #077a91;     /* deep teal — secondary particle hue */
+  --field-c: #6d28d9;     /* deep violet — tertiary particle hue */
+  --field-contrast: 1.65;
 
   /* — Inputs — */
   --input-bg: rgba(255, 255, 255, 0.86);
@@ -89,11 +107,13 @@
   --mesh-c: rgba(224, 86, 111, 0.10);
   --grid-line: rgba(23, 28, 60, 0.05);
 
-  /* — Page wash (light theme only — a faint warm/cool tint so the page
-     reads as a considered surface rather than flat white; dark theme
-     keeps a solid --bg since the mesh blobs already carry its depth) — */
-  --wash-warm: rgba(224, 86, 111, 0.045);
-  --wash-cool: rgba(10, 162, 192, 0.05);
+  /* — Page wash (light theme only — a faint warm/cool/violet tint so the
+     page reads as a considered surface rather than flat white; dark
+     theme keeps a solid --bg since the mesh blobs already carry its
+     depth) — */
+  --wash-warm: rgba(224, 86, 111, 0.055);
+  --wash-cool: rgba(10, 162, 192, 0.06);
+  --wash-violet: rgba(109, 40, 217, 0.04);
 
   /* — Hero name gradient — */
   --hero-name-1: #10142b;
@@ -174,6 +194,16 @@
   --loader-track: rgba(160, 168, 200, 0.12);
 
   --selection-bg: rgba(124, 108, 247, 0.32);
+
+  /* — Interactive field — dark mode already has excellent particle
+     contrast (mid-tone colours blended onto a near-black surface stay
+     vivid), so these are pure aliases of the existing brand colours at
+     their normal alpha — zero visual change from before this token
+     family existed. — */
+  --field-a: var(--primary);
+  --field-b: var(--secondary);
+  --field-c: var(--accent);
+  --field-contrast: 1;
 }
 
 /* ============================================================
