@@ -742,14 +742,12 @@
       "section": "certifications",
       "source": "resume",
       "tags": [
-        "certifications",
-        "certificates",
         "oracle",
         "oci",
-        "cloud",
+        "oracle cloud",
         "generative ai",
         "ai foundations",
-        "credentials"
+        "foundations associate"
       ],
       "text": "Usaid holds three Oracle certifications, all earned in 2025:\n\n- Oracle Cloud Infrastructure 2025 Certified Generative AI Professional\n- Oracle Cloud Infrastructure Foundations Associate\n- Oracle Cloud Infrastructure AI Foundations"
     },
@@ -759,8 +757,6 @@
       "section": "certifications",
       "source": "resume",
       "tags": [
-        "certifications",
-        "certificates",
         "linux foundation",
         "kubernetes",
         "gitops",
@@ -771,7 +767,7 @@
         "lfs158",
         "lfs162",
         "lfs169",
-        "credentials"
+        "courses"
       ],
       "text": "Usaid has completed four Linux Foundation courses:\n\n- Introduction to Linux (LFS101)\n- Introduction to Kubernetes (LFS158)\n- Introduction to DevOps and Site Reliability Engineering (LFS162)\n- Introduction to GitOps (LFS169)"
     },
