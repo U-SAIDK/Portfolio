@@ -163,4 +163,32 @@
     education: 'Education',
     contact: 'Contact',
   };
+
+  /* ── Greeting & suggested questions ──────────────────────── */
+
+  var GREETING =
+    "Hi! I'm Usaid's assistant. Ask me anything about his skills, projects, experience or how to reach him.";
+
+  var SUGGESTIONS = [
+    'What are his main skills?',
+    'Tell me about his projects',
+    'Where does he work?',
+    'How can I contact him?',
+  ];
+
+  function renderSuggestions(onPick) {
+    suggestionsEl.textContent = '';
+    SUGGESTIONS.forEach(function (question) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'chat-suggestion';
+      button.textContent = question;
+      button.addEventListener('click', function () { onPick(question); });
+      suggestionsEl.appendChild(button);
+    });
+  }
+
+  function clearSuggestions() {
+    suggestionsEl.textContent = '';
+  }
 })();
