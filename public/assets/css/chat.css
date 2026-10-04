@@ -142,7 +142,7 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 16px 14px 8px;
+  padding: 16px 14px 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
