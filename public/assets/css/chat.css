@@ -184,13 +184,20 @@
 
 .chat-msg p + p,
 .chat-msg p + ul,
-.chat-msg ul + p {
+.chat-msg p + ol,
+.chat-msg ul + p,
+.chat-msg ol + p {
   margin-top: 8px;
 }
 
 .chat-msg ul {
   padding-left: 16px;
   list-style: disc;
+}
+
+.chat-msg ol {
+  padding-left: 18px;
+  list-style: decimal;
 }
 
 .chat-msg li + li {
