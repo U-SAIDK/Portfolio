@@ -116,6 +116,31 @@
       "text": "Usaid lives in Pune, Maharashtra, India (Indian Standard Time, UTC+5:30).\n\nSpoken languages: English (fluent), Hindi (native) and Marathi (native).\n\nHe has delivered work for clients in India and in Europe, including English and Latvian website experiences for the Latvian and wider European market."
     },
     {
+      "id": "skills-overview",
+      "title": "Skills overview",
+      "section": "skills",
+      "source": "portfolio",
+      "tags": [
+        "skills",
+        "skill",
+        "main",
+        "core",
+        "top",
+        "best",
+        "key",
+        "tech stack",
+        "stack",
+        "technologies",
+        "expertise",
+        "strengths",
+        "overview",
+        "summary",
+        "good at",
+        "specialise"
+      ],
+      "text": "Usaid's core skills, by area:\n\n- Backend: Java, Spring Boot, Spring Security, Hibernate / JPA, REST APIs and microservices.\n- Frontend: React, Next.js, TypeScript, Angular and Tailwind CSS.\n- Databases: PostgreSQL, MySQL, Oracle and MongoDB.\n- DevOps: Docker, Kubernetes, Docker Swarm, Helm, Jenkins, GitHub Actions, GitLab CI and GitOps.\n- Cloud: AWS, Azure, Google Cloud and Oracle Cloud Infrastructure.\n- Testing: JUnit 5, Mockito, Vitest and Playwright.\n- AI and automation: RAG, Spring AI, LLM integration, MCP servers and AI agents.\n\nHis strongest area is Java / Spring Boot backend engineering, combined with hands-on DevOps and cloud practice."
+    },
+    {
       "id": "skills-languages",
       "title": "Programming and scripting languages",
       "section": "skills",
@@ -497,6 +522,30 @@
         "junior"
       ],
       "text": "Usaid started at Data Innovations Technologies Pvt. Ltd. as a Software Development Intern (August 2024 to January 2025). During the internship he:\n\n- Contributed to backend applications and API-driven workflows, including REST API integrations, JWT/OAuth 2.0 authentication and service-to-service communication.\n- Helped containerize multiple applications with Docker and supported CI/CD build, test and deployment pipelines in production-like environments.\n- Worked extensively in Linux environments for application setup, server configuration, troubleshooting and deployment.\n- Delivered 10+ enterprise-grade WordPress and e-commerce websites using WordPress, Elementor, WooCommerce and Shopify.\n\nThe internship led into his full-time Software Development Engineer role at the same company."
+    },
+    {
+      "id": "projects-overview",
+      "title": "Projects overview",
+      "section": "projects",
+      "source": "portfolio",
+      "tags": [
+        "projects",
+        "project",
+        "portfolio",
+        "work",
+        "built",
+        "made",
+        "created",
+        "overview",
+        "list",
+        "all",
+        "apps",
+        "applications",
+        "products",
+        "selected work",
+        "showcase"
+      ],
+      "text": "Usaid's main projects:\n\n- SimpleAccounts.io: an open-source fintech accounting platform (Java, Spring Boot, PostgreSQL).\n- TherapyCRM.io: a healthcare CRM for therapy practices (Spring Boot, Spring Security, Kubernetes).\n- Doctor CMS: a custom healthcare content management system he led (Next.js, React, TypeScript, Node.js).\n- NMS, Nursery Management System: a web and mobile platform (Next.js, Spring Boot, React Native).\n- ExamForge: a secure MCQ examination platform (Next.js, PostgreSQL, Prisma).\n- International and enterprise web solutions: 10+ client websites across India, Latvia and Europe (WordPress, WooCommerce, Shopify).\n- AI benchmark engineering for Handshake AI (Project Dynamo) and Snorkel AI (Sentinel Ultra).\n\nThe portfolio lists 15+ projects built in total; more live on his GitHub at https://github.com/U-SAIDK."
     },
     {
       "id": "project-simpleaccounts",
