@@ -246,56 +246,115 @@
     // Legacy materials still referenced by the not-yet-rebuilt body parts.
     var mBlack = new T.MeshStandardMaterial({ color: 0x080810, metalness: 0.92, roughness: 0.07 });
     var mDark = new T.MeshStandardMaterial({ color: 0x0f0f1e, metalness: 0.80, roughness: 0.18 });
+
     /* ── robot root ──────────────────────────────────────── */
     var robot = new T.Group();
     scene.add(robot);
 
     /* HEAD */
     var headG = new T.Group();
-    headG.position.set(0, 2.04, 0);
+    headG.position.set(0, 2.06, 0);
     robot.add(headG);
 
-    var headM = mesh(new T.SphereGeometry(0.42, 32, 24), mBlack.clone());
-    headM.scale.set(1, 0.92, 0.88);
-    headG.add(headM);
+    var HEAD_SCALE = [1.06, 0.94, 0.96];
 
+    var skull = mesh(new T.SphereGeometry(0.44, 48, 36), mShell);
+    skull.scale.set(HEAD_SCALE[0], HEAD_SCALE[1], HEAD_SCALE[2]);
+    headG.add(skull);
+
+    // Visor: a band of black glass sitting just proud of the skull. Cut
+    // from the same sphere (phi sweeps around +z, the direction the robot
+    // faces) so it follows the head's curvature exactly.
     var visor = new T.Mesh(
-      new T.CylinderGeometry(0.435, 0.435, 0.13, 32, 1, true, -PI * 0.55, PI * 1.1),
-      new T.MeshStandardMaterial({ color: 0x001020, metalness: 0.1, roughness: 0.04, transparent: true, opacity: 0.88, side: T.FrontSide })
+      new T.SphereGeometry(0.452, 48, 24, PI / 2 - 1.12, 2.24, 1.02, 0.86),
+      mGlass
     );
-    visor.rotation.x = PI / 2;
+    visor.scale.set(HEAD_SCALE[0], HEAD_SCALE[1], HEAD_SCALE[2]);
     headG.add(visor);
 
-    // Eyes — kept as separate meshes (rather than one) so each can blink
-    // independently later if desired, and so the scale-based blink below
-    // doesn't distort their horizontal spacing.
-    function makeEye(xOff) {
-      var g = new T.SphereGeometry(0.056, 16, 8);
-      g.scale(2.9, 0.55, 0.5);
-      var m = new T.Mesh(g, mEye);
-      m.position.set(xOff, 0.04, 0.375);
-      return m;
+    // Thin metal bezel framing the visor's top and bottom edges.
+    function visorTrim(theta) {
+      var r = 0.455 * Math.sin(theta);
+      var trim = new T.Mesh(new T.TorusGeometry(r, 0.008, 8, 48, 2.3), mMetal);
+      trim.rotation.x = PI / 2;
+      trim.rotation.z = -(PI / 2 + 1.15);
+      trim.position.y = 0.455 * Math.cos(theta) * HEAD_SCALE[1];
+      trim.scale.set(HEAD_SCALE[0], HEAD_SCALE[2], 1);
+      return trim;
     }
-    var leftEye = makeEye(-0.13);
-    var rightEye = makeEye(0.13);
+    headG.add(visorTrim(1.02), visorTrim(1.88));
+
+    // Eyes — separate meshes so the scale-based blink below doesn't
+    // distort their horizontal spacing. Each sits on the visor surface,
+    // rotated to face outward along the head's curve.
+    function makeEye(side) {
+      var g = new T.Group();
+      var lens = new T.Mesh(new T.CapsuleGeometry(0.036, 0.075, 6, 16), mEye);
+      lens.rotation.z = PI / 2;
+      lens.scale.z = 0.35;
+      g.add(lens);
+      g.position.set(side * 0.155, 0.035, 0.418);
+      g.rotation.y = side * 0.34;
+      return g;
+    }
+    var leftEye = makeEye(-1);
+    var rightEye = makeEye(1);
     headG.add(leftEye, rightEye);
 
-    // Antenna stem
-    var antStem = mesh(new T.CylinderGeometry(0.024, 0.042, 0.24, 8), mBlue.clone());
-    antStem.position.set(0, 0.53, 0);
-    headG.add(antStem);
+    // Mouth: a row of LED bars on the visor. Flat line at rest; they
+    // become an equaliser while the assistant "speaks".
+    var mouthBars = [];
+    var mouthG = new T.Group();
+    mouthG.position.set(0, -0.125, 0.442);
+    for (var mb = 0; mb < 5; mb++) {
+      var bar = new T.Mesh(new T.BoxGeometry(0.02, 0.012, 0.006), mMouth);
+      bar.position.x = (mb - 2) * 0.034;
+      // Follow the visor's curvature so the outer bars don't float.
+      bar.position.z = -Math.abs(mb - 2) * 0.006;
+      mouthBars.push(bar);
+      mouthG.add(bar);
+    }
+    headG.add(mouthG);
 
-    // Antenna tip (pulsing amber)
-    var antTipMat = new T.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xfbbf24, emissiveIntensity: 4.0, roughness: 0.0, metalness: 0.0 });
-    var antTip = new T.Mesh(new T.SphereGeometry(0.042, 8, 8), antTipMat);
-    antTip.position.set(0, 0.66, 0);
+    // Ear pods: machined caps with a glowing ring.
+    function makeEar(side) {
+      var g = new T.Group();
+      g.position.set(side * 0.455, 0, 0);
+      g.rotation.z = side * -PI / 2;
+      var pod = mesh(new T.CylinderGeometry(0.115, 0.135, 0.07, 32), mMetalDark);
+      g.add(pod);
+      var cap = mesh(new T.CylinderGeometry(0.07, 0.085, 0.04, 32), mMetal);
+      cap.position.y = 0.05;
+      g.add(cap);
+      var ring = new T.Mesh(new T.TorusGeometry(0.1, 0.01, 8, 40), mBlue);
+      ring.rotation.x = PI / 2;
+      ring.position.y = 0.036;
+      g.add(ring);
+      return g;
+    }
+    headG.add(makeEar(-1), makeEar(1));
+
+    // Antenna: base collar, slim mast, glowing tip.
+    var antBase = mesh(new T.CylinderGeometry(0.045, 0.062, 0.05, 20), mMetalDark);
+    antBase.position.set(0, 0.425, 0);
+    headG.add(antBase);
+    var antStem = mesh(new T.CylinderGeometry(0.012, 0.018, 0.24, 12), mMetal);
+    antStem.position.set(0, 0.56, 0);
+    headG.add(antStem);
+    var antTip = new T.Mesh(new T.SphereGeometry(0.04, 20, 16), antTipMat);
+    antTip.position.set(0, 0.7, 0);
     headG.add(antTip);
 
-    // Neck
-    var neck = mesh(new T.CylinderGeometry(0.10, 0.15, 0.24, 16), mDark.clone());
-    neck.position.set(0, -0.43, 0);
-    headG.add(neck);
-
+    // Neck: a metal core inside a stack of rubber bellows rings.
+    var neckCore = mesh(new T.CylinderGeometry(0.1, 0.12, 0.3, 20), mMetalDark);
+    neckCore.position.set(0, -0.48, 0);
+    headG.add(neckCore);
+    for (var nr = 0; nr < 3; nr++) {
+      var neckRing = mesh(new T.TorusGeometry(0.125 + nr * 0.012, 0.03, 10, 28), mRubber);
+      neckRing.rotation.x = PI / 2;
+      neckRing.position.set(0, -0.41 - nr * 0.065, 0);
+      headG.add(neckRing);
+    }
     /* UPPER TORSO */
     var torsoG = new T.Group();
     torsoG.position.set(0, 1.1, 0);
