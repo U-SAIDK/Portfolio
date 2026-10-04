@@ -448,3 +448,100 @@
   70%  { opacity: 0;    transform: scale(1.55); }
   100% { opacity: 0;    transform: scale(1.55); }
 }
+
+/* ── Hero robot launcher ─────────────────────────────────── */
+/* #robot-widget itself ignores the pointer (sections.css) so it never
+   blocks the particle field; only these two controls opt back in. */
+.robot-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* Invisible click target over the robot's body. */
+.robot-hit {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 16%;
+  bottom: 9%;
+  border: 0;
+  border-radius: 40% 40% 28% 28%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Speech bubble above the robot's head. */
+.robot-bubble {
+  position: absolute;
+  left: 50%;
+  top: 2%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-full);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: var(--shadow-1);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: robotBubbleFloat 3.6s ease-in-out infinite;
+  transition: border-color 0.25s, box-shadow 0.25s var(--ease), color 0.25s, opacity 0.25s;
+}
+
+/* Tail pointing down at the robot */
+.robot-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  background: inherit;
+  border-right: 1px solid var(--border-hi);
+  border-bottom: 1px solid var(--border-hi);
+  transform: translateX(-50%) rotate(45deg);
+  border-bottom-right-radius: 3px;
+}
+
+.robot-bubble:hover,
+.robot-hit:hover ~ .robot-bubble,
+.robot-hit:focus-visible ~ .robot-bubble {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 8px 30px var(--glow-primary);
+}
+
+.robot-bubble-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 10px var(--glow-emerald);
+  animation: robotDotPulse 1.8s ease-in-out infinite;
+}
+
+/* While the panel is open the bubble has done its job. */
+.chat-open .robot-bubble {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes robotBubbleFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-5px); }
+}
+
+@keyframes robotDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.8); }
+}
