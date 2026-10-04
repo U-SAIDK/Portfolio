@@ -295,11 +295,98 @@
     };
   }
 
+  /* ── Search ──────────────────────────────────────────────── */
+
+  // A result must clear this BM25 score AND match at least one term the
+  // visitor actually typed, otherwise the question is treated as out of
+  // scope. Calibrated against tests/rag-engine.test.js: on-topic
+  // questions land well above 3, unrelated ones ("capital of France")
+  // score 0 because none of their terms exist in the corpus.
+  var MIN_SCORE = 1.6;
+
+  /**
+   * Ranks chunks for a query.
+   * Returns { hits: [{ chunk, score }], confident, coverage, terms } where
+   * `coverage` is the fraction of typed query terms found in the corpus
+   * at all, and `confident` says whether the top hit is good enough to
+   * answer from.
+   */
+  function search(index, query, options) {
+    var limit = (options && options.limit) || 5;
+    var q = buildQueryTerms(query);
+    var scores = Object.create(null);
+    var typedMatched = Object.create(null); // docId -> count of typed terms matched
+
+    for (var term in q.weights) {
+      var list = index.postings[term];
+      if (!list) continue;
+      var weight = q.weights[term];
+      var isTyped = weight === 1;
+      for (var i = 0; i < list.length; i++) {
+        var p = list[i];
+        var doc = index.docs[p.doc];
+        var norm = 1 - B + B * (doc.length / index.avgLength);
+        var termScore = index.idf[term] * (p.tf * (K1 + 1)) / (p.tf + K1 * norm);
+        scores[p.doc] = (scores[p.doc] || 0) + termScore * weight;
+        // Bare numbers don't count as evidence: "what is 2+2" must not be
+        // answered just because some chunk mentions "2,374 tests".
+        if (isTyped && /[a-z]/.test(term)) typedMatched[p.doc] = (typedMatched[p.doc] || 0) + 1;
+      }
+    }
+
+    var uniqueTyped = unique(q.typed);
+    var known = 0;
+    for (var t = 0; t < uniqueTyped.length; t++) {
+      if (index.postings[uniqueTyped[t]]) known++;
+    }
+    var coverage = uniqueTyped.length ? known / uniqueTyped.length : 0;
+
+    var ranked = Object.keys(scores)
+      .map(function (id) { return { chunk: index.docs[id].chunk, score: scores[id], doc: +id }; })
+      .sort(function (a, b) { return b.score - a.score || a.doc - b.doc; });
+
+    var top = ranked[0];
+    var confident = !!top && top.score >= MIN_SCORE && typedMatched[top.doc] > 0;
+
+    // Drop the long tail: anything under 35% of the best score is noise
+    // that would only dilute the prompt.
+    var cutoff = top ? top.score * 0.35 : 0;
+    var hits = ranked
+      .filter(function (r) { return r.score >= cutoff; })
+      .slice(0, limit)
+      .map(function (r) { return { chunk: r.chunk, score: round(r.score) }; });
+
+    return { hits: confident ? hits : [], confident: confident, coverage: round(coverage), terms: uniqueTyped };
+  }
+
+  function unique(list) {
+    var seen = Object.create(null);
+    return list.filter(function (x) { return seen[x] ? false : (seen[x] = true); });
+  }
+
+  function round(n) { return Math.round(n * 1000) / 1000; }
+
+  // Follow-ups like "what did he build there?" or "and the stack?" carry
+  // almost no retrievable terms on their own. When the current question
+  // is that thin, retrieve on it plus the previous question.
+  var REFERENTIAL = /\b(it|that|this|those|them|there|one|same|also|more|else|another)\b/i;
+
+  function contextualQuery(question, previousQuestion) {
+    if (!previousQuestion) return question;
+    var terms = unique(tokenize(question));
+    if (terms.length <= 1 || (terms.length <= 3 && REFERENTIAL.test(question))) {
+      return question + ' ' + previousQuestion;
+    }
+    return question;
+  }
+
   return {
     tokenize: tokenize,
     normalize: normalize,
     stem: stem,
     buildQueryTerms: buildQueryTerms,
     createIndex: createIndex,
+    search: search,
+    contextualQuery: contextualQuery,
   };
 }));
