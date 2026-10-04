@@ -1,0 +1,53 @@
+/* ============================================================
+   CHAT — the portfolio assistant: launcher on the hero robot,
+   floating launcher elsewhere, and the translucent Q&A panel.
+   Colours come from tokens.css only, so both themes are covered.
+   ============================================================ */
+
+/* ── Panel shell ─────────────────────────────────────────── */
+.chat-panel {
+  /* Above the nav (700) and progress bar (800); below the loader and
+     the custom cursor so the cursor still draws over the panel. */
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 900;
+  width: 368px;
+  max-width: calc(100vw - 32px);
+  height: min(520px, calc(100vh - 120px));
+  height: min(520px, calc(100dvh - 120px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: var(--shadow-3), 0 0 0 1px var(--primary-soft) inset;
+  color: var(--text);
+  transform-origin: 100% 100%;
+  opacity: 0;
+  transform: translateY(14px) scale(0.96);
+  pointer-events: none;
+  /* visibility is delayed on close so the fade-out can play, and so the
+     closed panel's controls leave the tab order and the a11y tree. */
+  visibility: hidden;
+  transition: opacity 0.26s var(--ease), transform 0.34s var(--ease), visibility 0s linear 0.34s;
+}
+
+.chat-panel.is-open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.26s var(--ease), transform 0.34s var(--spring), visibility 0s;
+}
+
+/* Without backdrop-filter the translucent fill would let page text
+   bleed through and wreck legibility — fall back to the near-solid glass. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .chat-panel {
+    background: var(--glass-solid);
+  }
+}
