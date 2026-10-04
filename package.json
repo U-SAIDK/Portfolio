@@ -12,6 +12,7 @@
     "check:knowledge": "node scripts/build-knowledge.js --check"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "nodemailer": "^9.0.5"
   }
 }
