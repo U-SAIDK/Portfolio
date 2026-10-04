@@ -211,14 +211,41 @@
     var facePointLight = new T.PointLight(0x22d3ee, 0.9, 1.8, 2);
     facePointLight.position.set(0, 2.0, 0.7);
     scene.add(facePointLight);
+
     /* ── materials ───────────────────────────────────────── */
+    // Shared instances (not clones): fewer shader programs and uniforms
+    // to upload, and the theme switch only has to touch a handful.
+
+    // Outer armour: satin automotive paint — a rough-ish base under a
+    // glossy clear coat, which is what gives moulded shells their soft
+    // body colour with a sharp highlight on top.
+    var mShell = new T.MeshPhysicalMaterial({ color: 0xe8ebf3, metalness: 0.08, roughness: 0.42, clearcoat: 1.0, clearcoatRoughness: 0.12, envMapIntensity: 1.0 });
+    // Secondary armour panels, darker for a two-tone read.
+    var mShellDark = new T.MeshPhysicalMaterial({ color: 0x232838, metalness: 0.55, roughness: 0.36, clearcoat: 0.8, clearcoatRoughness: 0.2, envMapIntensity: 1.1 });
+    // Exposed mechanics: machined, slightly brushed metal.
+    var mMetal = new T.MeshStandardMaterial({ color: 0x9aa3b5, metalness: 1.0, roughness: 0.28, envMapIntensity: 1.15 });
+    var mMetalDark = new T.MeshStandardMaterial({ color: 0x2b303d, metalness: 0.95, roughness: 0.38, envMapIntensity: 1.0 });
+    // Flexible bellows at the neck, waist and joints.
+    var mRubber = new T.MeshStandardMaterial({ color: 0x0c0e14, metalness: 0.0, roughness: 0.82, envMapIntensity: 0.5 });
+    // Visor / chest window: black glass.
+    var mGlass = new T.MeshPhysicalMaterial({ color: 0x04060b, metalness: 0.3, roughness: 0.04, clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 1.5 });
+
+    // Emissives. toneMapped:false keeps LEDs saturated instead of letting
+    // ACES wash bright cyan toward white.
+    var mEye = new T.MeshBasicMaterial({ color: 0x4be3ff, toneMapped: false });
+    var mMouth = new T.MeshBasicMaterial({ color: 0x4be3ff, toneMapped: false, transparent: true, opacity: 0.9 });
+    var mBlue = new T.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x22d3ee, emissiveIntensity: 1.6, metalness: 0.2, roughness: 0.3 });
+    var mViolet = new T.MeshStandardMaterial({ color: 0x8b7cff, emissive: 0x7c6cf7, emissiveIntensity: 1.5, metalness: 0.2, roughness: 0.3 });
+    var mReact = new T.MeshStandardMaterial({ color: 0x34d399, emissive: 0x1fd08a, emissiveIntensity: 1.4, roughness: 0.1, metalness: 0.0 });
+    var antTipMat = new T.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xfbbf24, emissiveIntensity: 3.0, roughness: 0.1, metalness: 0.0 });
+
+    var EYE_IDLE = new T.Color(0x4be3ff);
+    var EYE_THINK = new T.Color(0xfbbf24);
+    var EYE_SPEAK = new T.Color(0x5df2c0);
+
+    // Legacy materials still referenced by the not-yet-rebuilt body parts.
     var mBlack = new T.MeshStandardMaterial({ color: 0x080810, metalness: 0.92, roughness: 0.07 });
     var mDark = new T.MeshStandardMaterial({ color: 0x0f0f1e, metalness: 0.80, roughness: 0.18 });
-    var mBlue = new T.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x22d3ee, emissiveIntensity: 0.8, metalness: 0.2, roughness: 0.2 });
-    var mViolet = new T.MeshStandardMaterial({ color: 0xfb7185, emissive: 0xfb7185, emissiveIntensity: 0.7, metalness: 0.2, roughness: 0.2 });
-    var mEye = new T.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x22d3ee, emissiveIntensity: 4.0, roughness: 0.0, metalness: 0.0 });
-    var mReact = new T.MeshStandardMaterial({ color: 0x34d399, emissive: 0x34d399, emissiveIntensity: 3.5, roughness: 0.0, metalness: 0.0 });
-
     /* ── robot root ──────────────────────────────────────── */
     var robot = new T.Group();
     scene.add(robot);
