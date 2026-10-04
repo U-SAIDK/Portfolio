@@ -602,3 +602,26 @@
     display: none;
   }
 }
+
+/* ── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel,
+  .chat-panel.is-open,
+  .chat-fab,
+  .chat-fab.is-visible {
+    transition: opacity 0.01s, visibility 0s;
+    transform: none;
+  }
+
+  .chat-msg,
+  .chat-typing span,
+  .chat-fab::before,
+  .robot-bubble,
+  .robot-bubble-dot {
+    animation: none;
+  }
+
+  .chat-typing span {
+    opacity: 0.7;
+  }
+}
