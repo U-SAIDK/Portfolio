@@ -169,26 +169,48 @@
       pmrem.dispose();
       envScene.traverse(function (o) { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
     } catch (_) { /* PMREM unsupported on this GPU/driver — materials fall back to direct lighting only */ }
-    /* ── lights ──────────────────────────────────────────── */
-    scene.add(new T.AmbientLight(0x1a1a2e, 3.5));
 
-    var keyLight = new T.DirectionalLight(0x7c6cf7, 4.5);
-    keyLight.position.set(-4, 6, 5);
+    /* ── lights ──────────────────────────────────────────── */
+    // The environment map does most of the shading; these add direction
+    // (a key that casts the ground shadow) and the coloured rims that tie
+    // the robot to the site's cyan / violet palette.
+    scene.add(new T.HemisphereLight(0xdfe6ff, 0x1a1c2a, 0.55));
+
+    var keyLight = new T.DirectionalLight(0xfff4e8, 2.1);
+    keyLight.position.set(-1.4, 9, 3.2);
     keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.camera.left = -2.4;
+    keyLight.shadow.camera.right = 2.4;
+    keyLight.shadow.camera.top = 3.6;
+    keyLight.shadow.camera.bottom = -1.6;
+    keyLight.shadow.camera.near = 1;
+    keyLight.shadow.camera.far = 18;
+    keyLight.shadow.bias = -0.0006;
+    keyLight.shadow.normalBias = 0.02;
+    keyLight.shadow.radius = 5;
     scene.add(keyLight);
 
-    var fillLight = new T.DirectionalLight(0x22d3ee, 2.4);
-    fillLight.position.set(4, 3, 2);
+    var fillLight = new T.DirectionalLight(0x22d3ee, 0.9);
+    fillLight.position.set(4.5, 2.5, 3);
     scene.add(fillLight);
 
-    var rimLight = new T.DirectionalLight(0xffffff, 1.6);
-    rimLight.position.set(0, 8, -5);
+    var rimLight = new T.DirectionalLight(0x8b7cff, 2.4);
+    rimLight.position.set(2.5, 4.5, -5);
     scene.add(rimLight);
 
-    var chestPointLight = new T.PointLight(0x34d399, 3.0, 4.5);
-    chestPointLight.position.set(0, 0.2, 1.1);
+    var rimLight2 = new T.DirectionalLight(0xffffff, 1.2);
+    rimLight2.position.set(-3.5, 3, -4.5);
+    scene.add(rimLight2);
+
+    var chestPointLight = new T.PointLight(0x34d399, 1.6, 3.2, 2);
+    chestPointLight.position.set(0, 1.18, 0.75);
     scene.add(chestPointLight);
 
+    // Faint glow from the face onto the collar and chest.
+    var facePointLight = new T.PointLight(0x22d3ee, 0.9, 1.8, 2);
+    facePointLight.position.set(0, 2.0, 0.7);
+    scene.add(facePointLight);
     /* ── materials ───────────────────────────────────────── */
     var mBlack = new T.MeshStandardMaterial({ color: 0x080810, metalness: 0.92, roughness: 0.07 });
     var mDark = new T.MeshStandardMaterial({ color: 0x0f0f1e, metalness: 0.80, roughness: 0.18 });
