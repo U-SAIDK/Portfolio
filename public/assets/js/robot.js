@@ -652,10 +652,38 @@
     }
     applyTheme();
     document.documentElement.addEventListener('uk-themechange', applyTheme);
+
+    /* ── chat state ──────────────────────────────────────── */
+    // 'closed' | 'open' | 'thinking' | 'speaking' — set by chat.js.
+    var chatState = 'closed';
+    var waveUntil = -1;     // clock time until which the greeting wave plays
+    var hovered = false;
+
+    document.documentElement.addEventListener('uk-chat', function (e) {
+      var next = e.detail && e.detail.state;
+      if (!next || next === chatState) return;
+      // Wave hello when the panel opens from closed (not on every return
+      // to 'open' after an answer).
+      if (next === 'open' && chatState === 'closed') waveUntil = clock.getElapsedTime() + 2.3;
+      chatState = next;
+    });
+
+    // Leaning in when the visitor hovers a launcher tells them the robot
+    // is the thing to click.
+    var hoverTargets = widget.querySelectorAll('[data-chat-open]');
+    for (var ht = 0; ht < hoverTargets.length; ht++) {
+      hoverTargets[ht].addEventListener('mouseenter', function () { hovered = true; });
+      hoverTargets[ht].addEventListener('mouseleave', function () { hovered = false; });
+    }
+
     /* ── animation state ─────────────────────────────────── */
-    var hRot = { x: 0, y: 0 };
+    var hRot = { x: 0, y: 0, z: 0 };
     var tRot = { x: 0, y: 0 };
     var aL = 0, aR = 0, lean = 0;
+    var wave = 0;           // 0 = arm at rest, 1 = fully raised
+    var engaged = 0;        // 0 = following the cursor, 1 = facing the visitor
+    var thinking = 0, speaking = 0, hoverAmt = 0;
+    var eyeColor = EYE_IDLE.clone();
     var blinkAt = 2 + Math.random() * 3;
     var clock = new T.Clock();
     clock.start();
@@ -675,6 +703,15 @@
       var dt = Math.min(clock.getDelta(), 1 / 20);
       var t = clock.getElapsedTime();
 
+      // Blend factors for each chat state, eased so transitions between
+      // poses never snap.
+      var chatOpen = chatState !== 'closed';
+      engaged = damp(engaged, chatOpen ? 1 : 0, 4, dt);
+      thinking = damp(thinking, chatState === 'thinking' ? 1 : 0, 6, dt);
+      speaking = damp(speaking, chatState === 'speaking' ? 1 : 0, 8, dt);
+      hoverAmt = damp(hoverAmt, hovered && !chatOpen ? 1 : 0, 7, dt);
+      wave = damp(wave, t < waveUntil ? 1 : 0, t < waveUntil ? 7 : 5, dt);
+
       // Idle wander: blends in the longer the cursor stays still or off-window.
       var idleT = pointerInWindow ? (t - lastMoveAt - IDLE_DELAY) : Infinity;
       var idleFactor = clamp(idleT / IDLE_FADE, 0, 1);
@@ -683,53 +720,93 @@
       var targetX = mix(mx, idleX, idleFactor);
       var targetY = mix(my, idleY, idleFactor);
 
+      // While chatting the robot gives the visitor its attention: it
+      // mostly faces the camera, with a little residual cursor tracking
+      // so it doesn't look switched off.
+      targetX = mix(targetX, targetX * 0.18, engaged);
+      targetY = mix(targetY, 0.05 + targetY * 0.15, engaged);
+
       var breathe = Math.sin(t * 0.9) * 0.01;
-      robot.position.y = Math.sin(t * 1.18) * 0.013;
-      robot.scale.y = 1 + breathe * 0.4;
+      robot.position.y = Math.sin(t * 1.18) * 0.012;
+      torsoG.scale.y = 1 + breathe * 0.6;
 
       hRot.y = damp(hRot.y, targetX * 0.55, 6, dt);
       hRot.x = damp(hRot.x, targetY * 0.30, 6, dt);
+      // Thinking = the classic head tilt, plus a slow glance up and away.
+      hRot.z = damp(hRot.z, thinking * 0.16, 5, dt);
       tRot.y = damp(tRot.y, targetX * 0.22, 4, dt);
       tRot.x = damp(tRot.x, targetY * 0.14, 4, dt);
       aL = damp(aL, targetX * 0.12 + targetY * 0.09, 3.5, dt);
       aR = damp(aR, targetX * -0.12 + targetY * 0.09, 3.5, dt);
       var dist = Math.sqrt(targetX * targetX + targetY * targetY);
-      lean = damp(lean, (1 - clamp(dist, 0, 1)) * 0.06, 3.5, dt);
+      lean = damp(lean, (1 - clamp(dist, 0, 1)) * 0.05 + hoverAmt * 0.07 + engaged * 0.03, 3.5, dt);
 
-      headG.rotation.y = hRot.y + Math.sin(t * 0.72) * 0.008;
-      headG.rotation.x = -hRot.x;
+      var nod = Math.sin(t * 5.2) * 0.022 * speaking;
+      headG.rotation.y = hRot.y + Math.sin(t * 0.72) * 0.008 + thinking * 0.12;
+      headG.rotation.x = -hRot.x + nod - thinking * 0.08;
+      headG.rotation.z = hRot.z;
       torsoG.rotation.y = tRot.y;
       torsoG.rotation.x = -tRot.x;
-      leftArm.rotation.z = 0.10 + aL * 0.5;
-      leftArm.rotation.x = aL;
-      rightArm.rotation.z = -0.10 + aR * 0.5;
-      rightArm.rotation.x = aR;
       robot.rotation.x = lean;
 
+      // Arms. Rest pose hangs slightly away from the body; the right arm
+      // (viewer's right) blends up into a raised wave on greeting.
+      leftArm.rotation.z = -0.1 + aL * 0.4;
+      leftArm.rotation.x = aL - 0.04;
+      leftArm.userData.elbow.rotation.x = -0.14 - Math.abs(aL) * 0.5 - speaking * (0.12 + Math.sin(t * 3.1) * 0.06);
+
+      var waveSwing = Math.sin(t * 8.5) * 0.3;
+      rightArm.rotation.z = mix(0.1 + aR * 0.4, 2.35, wave);
+      rightArm.rotation.x = mix(aR - 0.04, 0, wave);
+      rightArm.userData.elbow.rotation.x = mix(-0.14 - Math.abs(aR) * 0.5 - speaking * (0.12 + Math.sin(t * 3.1 + 1) * 0.06), 0, wave);
+      rightArm.userData.elbow.rotation.z = (0.75 + waveSwing) * wave;
+      rightArm.userData.hand.rotation.z = waveSwing * 0.6 * wave;
+
       // Blink — quick eyelid-style scale down/up rather than a linear fade.
+      var eyeOpen = 1 + hoverAmt * 0.22;
       if (t >= blinkAt) {
         var sinceBlink = t - blinkAt;
         var BLINK_DURATION = 0.14;
         if (sinceBlink < BLINK_DURATION) {
-          var phase = sinceBlink / BLINK_DURATION; // 0 -> 1
-          var closeAmount = Math.sin(phase * PI); // 0 -> 1 -> 0
-          var scaleY = 1 - closeAmount * 0.9;
-          leftEye.scale.y = scaleY;
-          rightEye.scale.y = scaleY;
+          eyeOpen *= 1 - Math.sin((sinceBlink / BLINK_DURATION) * PI) * 0.9;
         } else {
-          leftEye.scale.y = rightEye.scale.y = 1;
           blinkAt = t + 2.5 + Math.random() * 3.5;
         }
       }
+      // Thinking narrows the eyes a touch — a "concentrating" squint.
+      eyeOpen *= 1 - thinking * 0.3;
+      leftEye.scale.y = rightEye.scale.y = eyeOpen;
+
+      // Eye / mouth colour follows the state.
+      eyeColor.copy(EYE_IDLE).lerp(EYE_SPEAK, speaking).lerp(EYE_THINK, thinking);
+      mEye.color.copy(eyeColor);
+      mMouth.color.copy(eyeColor);
+      facePointLight.color.copy(eyeColor);
+
+      // Mouth: flat line at rest, travelling dots while thinking, an
+      // equaliser while speaking.
+      for (var i = 0; i < mouthBars.length; i++) {
+        var talk = 1 + (Math.abs(Math.sin(t * 11 + i * 1.7)) * 3.6 + Math.abs(Math.sin(t * 6.3 + i * 0.9)) * 2.2) * speaking;
+        var dots = 1 + Math.max(0, Math.sin(t * 6 - i * 0.9)) * 2.2 * thinking;
+        mouthBars[i].scale.y = talk * dots;
+      }
+      mMouth.opacity = 0.55 + 0.45 * Math.max(speaking, thinking, engaged * 0.6);
+
+      // Status LEDs chase while thinking, sit steady otherwise.
+      for (var j = 0; j < statusLeds.length; j++) {
+        statusLeds[j].material.opacity = mix(0.75, 0.25 + 0.75 * Math.max(0, Math.sin(t * 7 - j * 1.2)), thinking);
+        statusLeds[j].material.color.copy(eyeColor);
+      }
 
       var pulse = 0.5 + Math.sin(t * 3.1) * 0.35;
-      mReact.emissiveIntensity = 2.8 + pulse;
-      chestPointLight.intensity = 2.2 + pulse * 0.6;
-      antTipMat.emissiveIntensity = 2.0 + Math.sin(t * 4.2) * 1.0;
+      mReact.emissiveIntensity = 1.0 + pulse * 0.7 + speaking * 0.8;
+      chestPointLight.intensity = 1.3 + pulse * 0.5 + speaking * 0.5;
+      // Antenna: slow beacon at rest, rapid flicker while thinking.
+      antTipMat.emissiveIntensity = mix(2.0 + Math.sin(t * 4.2) * 1.0, 1.2 + (Math.sin(t * 22) > 0 ? 3.4 : 0), thinking);
+      padRing.material.opacity = padRing.userData.base * (0.8 + 0.2 * Math.sin(t * 1.6) + hoverAmt * 0.35 + engaged * 0.25);
 
       var groundedness = 1 - clamp(Math.abs(robot.position.y) * 4, 0, 0.35);
-      shadowDisc.scale.setScalar(groundedness);
-      shadowDisc.material.opacity = 0.28 * groundedness;
+      shadowDisc.scale.set(groundedness, 0.62 * groundedness, 1);
 
       renderer.render(scene, camera);
     }());
