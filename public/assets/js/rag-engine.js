@@ -548,7 +548,10 @@
   // Public shape of a citation: enough for the UI to label a chip and
   // link to the page section, without shipping the chunk text twice.
   function toSources(hits, limit) {
-    return hits.slice(0, limit || 3).map(function (hit) {
+    // Only cite chunks that carried real weight; a distant runner-up
+    // shown as a "source" would misrepresent where the answer came from.
+    var floor = hits.length ? hits[0].score * 0.5 : 0;
+    return hits.filter(function (hit) { return hit.score >= floor; }).slice(0, limit || 3).map(function (hit) {
       return { id: hit.chunk.id, title: hit.chunk.title, section: hit.chunk.section };
     });
   }
