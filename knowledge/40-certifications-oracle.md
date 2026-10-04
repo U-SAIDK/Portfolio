@@ -2,7 +2,7 @@
 title: Oracle Cloud certifications
 section: certifications
 source: resume
-tags: certifications, certificates, oracle, oci, cloud, generative ai, ai foundations, credentials
+tags: oracle, oci, oracle cloud, generative ai, ai foundations, foundations associate
 ---
 
 Usaid holds three Oracle certifications, all earned in 2025:
