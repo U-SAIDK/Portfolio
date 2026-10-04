@@ -550,7 +550,7 @@
   function toSources(hits, limit) {
     // Only cite chunks that carried real weight; a distant runner-up
     // shown as a "source" would misrepresent where the answer came from.
-    var floor = hits.length ? hits[0].score * 0.6 : 0;
+    var floor = hits.length ? hits[0].score * 0.75 : 0;
     return hits.filter(function (hit) { return hit.score >= floor; }).slice(0, limit || 3).map(function (hit) {
       return { id: hit.chunk.id, title: hit.chunk.title, section: hit.chunk.section };
     });
