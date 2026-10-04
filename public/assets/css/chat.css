@@ -136,6 +136,8 @@
 
 /* ── Message log ─────────────────────────────────────────── */
 .chat-log {
+  /* Offset parent for bubbles, so chat.js can scroll one into view. */
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
