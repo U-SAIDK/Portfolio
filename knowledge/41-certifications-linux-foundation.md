@@ -2,7 +2,7 @@
 title: Linux Foundation courses
 section: certifications
 source: resume
-tags: certifications, certificates, linux foundation, kubernetes, gitops, devops, sre, linux, lfs101, lfs158, lfs162, lfs169, credentials
+tags: linux foundation, kubernetes, gitops, devops, sre, linux, lfs101, lfs158, lfs162, lfs169, courses
 ---
 
 Usaid has completed four Linux Foundation courses:
