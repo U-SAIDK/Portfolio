@@ -530,35 +530,53 @@
     var leftArm = makeArm(-1);
     var rightArm = makeArm(1);
     robot.add(leftArm, rightArm);
+
     /* LEGS */
     function makeLeg(side) {
       var lg = new T.Group();
-      lg.position.set(side * 0.28, 0.38, 0);
+      lg.position.set(side * 0.24, 0.28, 0);
 
-      var thigh = mesh(new T.CapsuleGeometry(0.138, 0.40, 8, 12), mBlack.clone());
-      thigh.position.y = -0.25;
+      var hipJoint = mesh(new T.SphereGeometry(0.135, 20, 16), mMetal);
+      lg.add(hipJoint);
+
+      var thigh = mesh(new T.CapsuleGeometry(0.135, 0.3, 8, 20), mShell);
+      thigh.position.y = -0.27;
       lg.add(thigh);
 
-      var knee = new T.Mesh(new T.SphereGeometry(0.145, 12, 10), mDark.clone());
+      var knee = mesh(new T.SphereGeometry(0.115, 20, 16), mMetal);
       knee.position.y = -0.54;
       lg.add(knee);
+      var kneeCap = mesh(roundedBox(0.17, 0.15, 0.08, 0.035), mShellDark);
+      kneeCap.position.set(0, -0.54, 0.105);
+      lg.add(kneeCap);
 
-      var shin = mesh(new T.CapsuleGeometry(0.108, 0.40, 8, 12), mBlack.clone());
-      shin.position.y = -0.87;
+      // Shin widens toward the ankle, like a boot.
+      var shin = mesh(new T.CylinderGeometry(0.1, 0.135, 0.42, 24), mShell);
+      shin.position.y = -0.82;
       lg.add(shin);
+      var shinTop = mesh(new T.SphereGeometry(0.1, 20, 12, 0, PI * 2, 0, PI / 2), mShell);
+      shinTop.position.y = -0.61;
+      lg.add(shinTop);
 
-      var stripe = new T.Mesh(new T.BoxGeometry(0.042, 0.20, 0.15), mViolet.clone());
-      stripe.position.set(0, -0.85, 0.12);
+      var stripe = new T.Mesh(roundedBox(0.03, 0.2, 0.02, 0.009), mViolet);
+      stripe.position.set(0, -0.82, 0.125);
+      stripe.rotation.x = 0.083;
       lg.add(stripe);
 
-      var foot = mesh(new T.BoxGeometry(0.23, 0.10, 0.36), mBlack.clone());
-      foot.position.set(0.02 * side, -1.20, 0.07);
+      var ankle = mesh(new T.CylinderGeometry(0.085, 0.085, 0.06, 18), mMetalDark);
+      ankle.position.y = -1.06;
+      lg.add(ankle);
+
+      var foot = mesh(roundedBox(0.25, 0.11, 0.42, 0.05), mShell);
+      foot.position.set(side * 0.01, -1.135, 0.07);
       lg.add(foot);
+      var sole = mesh(roundedBox(0.26, 0.035, 0.43, 0.015), mRubber);
+      sole.position.set(side * 0.01, -1.19, 0.07);
+      lg.add(sole);
 
       return lg;
     }
     robot.add(makeLeg(-1), makeLeg(1));
-
     /* Ground contact shadow — scales/fades with bob height as a cheap
        depth cue (a real projected shadow would need a receiving plane
        and cost more, this reads convincingly at this widget's size). */
