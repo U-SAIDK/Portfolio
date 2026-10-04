@@ -218,7 +218,7 @@
           <span class="chip is-static">Pune, India</span>
         </div>
         <div class="hero-btns reveal" data-reveal-delay="300">
-          <a href="USAID_RESUME.pdf" download="USAID_RESUME.pdf" class="btn btn-primary">
+          <a href="USAID_Resume.pdf" download="USAID_RESUME.pdf" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
@@ -259,7 +259,19 @@
           </a>
         </div>
       </div>
-      <div id="robot-widget" aria-hidden="true"></div>
+      <!-- Robot: decorative Three.js canvas + the two controls that open
+           the assistant (speech bubble, and the robot's body itself). -->
+      <div id="robot-widget">
+        <div class="robot-canvas" id="robot-canvas" aria-hidden="true"></div>
+        <!-- Second click target for the same action; kept out of the tab
+             order and the a11y tree so the bubble is the single control. -->
+        <button type="button" class="robot-hit" data-chat-open tabindex="-1" aria-hidden="true"></button>
+        <button type="button" class="robot-bubble" data-chat-open aria-haspopup="dialog" aria-controls="chat-panel"
+          aria-expanded="false">
+          <span class="robot-bubble-dot" aria-hidden="true"></span>
+          Ask me about Usaid
+        </button>
+      </div>
       <div class="hero-scroll" aria-hidden="true">
         <span>Scroll</span>
         <div class="scroll-wire"></div>
@@ -1061,12 +1073,12 @@
           </div>
         </div>
         <div class="resume-actions">
-          <a href="USAID_RESUME.pdf" download="USAID_RESUME.pdf" class="btn btn-primary">
+          <a href="USAID_Resume.pdf" download="USAID_RESUME.pdf" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
             <span>Download Resume</span>
           </a>
-          <a href="USAID_RESUME.pdf" target="_blank" rel="noopener" class="btn btn-ghost">Open PDF</a>
+          <a href="USAID_Resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost">Open PDF</a>
         </div>
       </div>
     </section>
@@ -1391,6 +1403,67 @@
   </footer>
 
   <!-- =============================================
+       ASSISTANT (RAG chat) — see assets/js/chat.js
+       ============================================= -->
+  <button type="button" class="chat-fab" id="chat-fab" data-chat-open aria-haspopup="dialog" aria-controls="chat-panel"
+    aria-expanded="false" aria-label="Ask the assistant about Usaid" title="Ask about Usaid">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 2v3" />
+      <circle cx="12" cy="2" r="0.6" fill="currentColor" />
+      <rect x="4" y="5" width="16" height="12" rx="4" />
+      <path d="M9 10.5v1.5M15 10.5v1.5" />
+      <path d="M2 10v3M22 10v3" />
+      <path d="M9 21l3-4 3 4" />
+    </svg>
+  </button>
+
+  <div class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title"
+    aria-describedby="chat-sub">
+    <header class="chat-head">
+      <span class="chat-avatar" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v3" />
+          <circle cx="12" cy="2" r="0.6" fill="currentColor" />
+          <rect x="4" y="5" width="16" height="12" rx="4" />
+          <path d="M9 10.5v1.5M15 10.5v1.5" />
+          <path d="M2 10v3M22 10v3" />
+          <path d="M8 21h8M10 17v4M14 17v4" />
+        </svg>
+      </span>
+      <div class="chat-head-text">
+        <h2 class="chat-title" id="chat-title">Ask about Usaid</h2>
+        <p class="chat-sub" id="chat-sub">Answers from his portfolio &amp; resume</p>
+      </div>
+      <button type="button" class="chat-close" id="chat-close" aria-label="Close assistant">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"
+      aria-label="Conversation"></div>
+
+    <div class="chat-suggestions" id="chat-suggestions" role="group" aria-label="Suggested questions"></div>
+
+    <form class="chat-form" id="chat-form" autocomplete="off" novalidate>
+      <label class="sr-only" for="chat-input">Your question about Usaid</label>
+      <input type="text" class="chat-input" id="chat-input" name="question" maxlength="500"
+        placeholder="Ask about skills, projects, experience…" enterkeyhint="send" autocapitalize="sentences">
+      <button type="submit" class="chat-send" id="chat-send" aria-label="Send question" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </button>
+    </form>
+    <p class="chat-note">AI-generated · verify important details</p>
+  </div>
+
+  <!-- =============================================
        JAVASCRIPT
        ============================================= -->
   <!-- Not async/defer — must run and define window.onTurnstileLoad before
@@ -1404,6 +1477,7 @@
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/contact-form.js" defer></script>
   <script src="assets/js/robot.js" defer></script>
+  <script src="assets/js/chat.js" defer></script>
 </body>
 
 </html>

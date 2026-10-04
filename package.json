@@ -6,7 +6,13 @@
   "engines": {
     "node": ">=18"
   },
+  "scripts": {
+    "test": "node --test tests/",
+    "build:knowledge": "node scripts/build-knowledge.js",
+    "check:knowledge": "node scripts/build-knowledge.js --check"
+  },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "nodemailer": "^9.0.5"
   }
 }

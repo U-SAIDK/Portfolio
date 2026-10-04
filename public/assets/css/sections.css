@@ -190,7 +190,9 @@
   50%      { transform: translateX(-50%) translateY(8px); }
 }
 
-/* — Robot widget (preserved, Three.js) — */
+/* — Robot widget (Three.js canvas + assistant launchers, see chat.css) —
+   The widget itself ignores the pointer so the particle field beneath
+   keeps receiving it; .robot-bubble / .robot-hit opt back in. */
 #robot-widget {
   position: absolute;
   right: 2%;
