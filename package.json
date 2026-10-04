@@ -6,6 +6,10 @@
   "engines": {
     "node": ">=18"
   },
+  "scripts": {
+    "build:knowledge": "node scripts/build-knowledge.js",
+    "check:knowledge": "node scripts/build-knowledge.js --check"
+  },
   "dependencies": {
     "nodemailer": "^9.0.5"
   }
