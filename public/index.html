@@ -259,7 +259,19 @@
           </a>
         </div>
       </div>
-      <div id="robot-widget" aria-hidden="true"></div>
+      <!-- Robot: decorative Three.js canvas + the two controls that open
+           the assistant (speech bubble, and the robot's body itself). -->
+      <div id="robot-widget">
+        <div class="robot-canvas" id="robot-canvas" aria-hidden="true"></div>
+        <!-- Second click target for the same action; kept out of the tab
+             order and the a11y tree so the bubble is the single control. -->
+        <button type="button" class="robot-hit" data-chat-open tabindex="-1" aria-hidden="true"></button>
+        <button type="button" class="robot-bubble" data-chat-open aria-haspopup="dialog" aria-controls="chat-panel"
+          aria-expanded="false">
+          <span class="robot-bubble-dot" aria-hidden="true"></span>
+          Ask me about Usaid
+        </button>
+      </div>
       <div class="hero-scroll" aria-hidden="true">
         <span>Scroll</span>
         <div class="scroll-wire"></div>
