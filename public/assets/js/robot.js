@@ -629,6 +629,29 @@
     padGlow.rotation.x = -PI / 2;
     padGlow.position.y = GROUND_Y + 0.002;
     scene.add(padGlow);
+
+    /* ── theme ───────────────────────────────────────────── */
+    // Same robot, relit per theme. On the light page it needs a firm
+    // ground shadow and restrained glow; on the dark page shadows are
+    // invisible anyway, so the rims and the projector ring do the work
+    // of separating it from the background.
+    function applyTheme() {
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      renderer.toneMappingExposure = dark ? 1.12 : 1.02;
+      shadowCatcher.material.opacity = dark ? 0.5 : 0.2;
+      shadowDisc.material.opacity = dark ? 0.75 : 0.55;
+      padRing.userData.base = dark ? 0.75 : 0.42;
+      padRing.material.opacity = padRing.userData.base;
+      padGlow.material.opacity = dark ? 1.0 : 0.55;
+      rimLight.intensity = dark ? 3.2 : 2.0;
+      rimLight2.intensity = dark ? 1.8 : 1.0;
+      // A slightly cooler, dimmer shell on dark keeps it from blowing out
+      // against a near-black page.
+      mShell.color.set(dark ? 0xd3d8e6 : 0xeceff6);
+      mShell.envMapIntensity = dark ? 0.85 : 1.0;
+    }
+    applyTheme();
+    document.documentElement.addEventListener('uk-themechange', applyTheme);
     /* ── animation state ─────────────────────────────────── */
     var hRot = { x: 0, y: 0 };
     var tRot = { x: 0, y: 0 };
