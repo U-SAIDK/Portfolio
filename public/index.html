@@ -1403,6 +1403,54 @@
   </footer>
 
   <!-- =============================================
+       ASSISTANT (RAG chat) — see assets/js/chat.js
+       ============================================= -->
+  <div class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title"
+    aria-describedby="chat-sub">
+    <header class="chat-head">
+      <span class="chat-avatar" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v3" />
+          <circle cx="12" cy="2" r="0.6" fill="currentColor" />
+          <rect x="4" y="5" width="16" height="12" rx="4" />
+          <path d="M9 10.5v1.5M15 10.5v1.5" />
+          <path d="M2 10v3M22 10v3" />
+          <path d="M8 21h8M10 17v4M14 17v4" />
+        </svg>
+      </span>
+      <div class="chat-head-text">
+        <h2 class="chat-title" id="chat-title">Ask about Usaid</h2>
+        <p class="chat-sub" id="chat-sub">Answers from his portfolio &amp; resume</p>
+      </div>
+      <button type="button" class="chat-close" id="chat-close" aria-label="Close assistant">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"
+      aria-label="Conversation"></div>
+
+    <div class="chat-suggestions" id="chat-suggestions" role="group" aria-label="Suggested questions"></div>
+
+    <form class="chat-form" id="chat-form" autocomplete="off" novalidate>
+      <label class="sr-only" for="chat-input">Your question about Usaid</label>
+      <input type="text" class="chat-input" id="chat-input" name="question" maxlength="500"
+        placeholder="Ask about skills, projects, experience…" enterkeyhint="send" autocapitalize="sentences">
+      <button type="submit" class="chat-send" id="chat-send" aria-label="Send question" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </button>
+    </form>
+    <p class="chat-note">AI assistant · answers only from Usaid's portfolio and resume</p>
+  </div>
+
+  <!-- =============================================
        JAVASCRIPT
        ============================================= -->
   <!-- Not async/defer — must run and define window.onTurnstileLoad before
