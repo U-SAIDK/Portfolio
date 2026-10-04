@@ -1,10 +1,12 @@
 /**
  * Standalone Express server for local development without the Netlify CLI.
  *
- * In production the contact form is served by netlify/functions/contact.js.
- * This server exists purely so the site can be developed with a plain
- * static-file server (e.g. VS Code Live Server) instead of `netlify dev`.
- * See ../shared/contact-handler.js for the actual form-handling logic.
+ * In production the contact form and the chat assistant are served by
+ * netlify/functions/contact.js and netlify/functions/chat.js. This server
+ * exists purely so the site can be developed with a plain static-file
+ * server (e.g. VS Code Live Server) instead of `netlify dev`.
+ * See ../shared/contact-handler.js and ../shared/chat-handler.js for the
+ * actual request-handling logic.
  */
 
 'use strict';
@@ -13,6 +15,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { handleContactSubmission } = require('../shared/contact-handler');
+const { handleChat } = require('../shared/chat-handler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -57,6 +60,17 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { status, body } = await handleChat(req.body, process.env, { ip: req.ip });
+    if (status === 429 && body.retryAfter) res.set('Retry-After', String(body.retryAfter));
+    res.set('Cache-Control', 'no-store').status(status).json(body);
+  } catch (err) {
+    console.error('Unexpected error processing chat request:', err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
 // Generic error handler — catches CORS rejections and body-parser errors
 // so they come back as JSON instead of Express's default HTML error page.
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
@@ -65,5 +79,5 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Contact form dev server running on http://localhost:${PORT}`);
+  console.log(`Dev API server (contact form + chat) running on http://localhost:${PORT}`);
 });
