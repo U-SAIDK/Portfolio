@@ -16,3 +16,10 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# The corpus only changes on deploy, but keep revalidation cheap and
+# explicit so a knowledge update is never masked by a stale browser copy.
+[[headers]]
+  for = "/assets/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
