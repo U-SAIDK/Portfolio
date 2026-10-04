@@ -55,7 +55,9 @@
     }
 
     /* ── container ───────────────────────────────────────── */
-    var el = document.getElementById('robot-widget');
+    // The canvas goes in its own layer so the launcher buttons that
+    // share #robot-widget stay above it and keep their pointer events.
+    var el = document.getElementById('robot-canvas') || document.getElementById('robot-widget');
     if (!el) return;
     var CW = el.clientWidth || 340;
     var CH = el.clientHeight || 460;
