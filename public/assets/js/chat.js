@@ -33,8 +33,8 @@
 
   /* ── Rendering ───────────────────────────────────────────── */
 
-  // Answers use a tiny markdown subset (paragraphs, "- " bullets, **bold**,
-  // bare URLs and emails). Everything is built with DOM nodes and
+  // Answers use a tiny markdown subset (paragraphs, "- " bullets, "1."
+  // numbered items, **bold**, bare URLs and emails). Everything is built with DOM nodes and
   // textContent — never innerHTML — so neither a model answer nor a
   // visitor's own question can inject markup.
   var INLINE = /(\*\*[^*\n]+\*\*)|(https?:\/\/[^\s<>()]+[^\s<>().,;:!?'"])|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
@@ -76,13 +76,15 @@
       if (!line) { list = null; paragraph = null; return; }
 
       var bullet = /^[-*•]\s+(.*)$/.exec(line);
-      if (bullet) {
-        if (!list) {
-          list = document.createElement('ul');
+      var numbered = !bullet && /^\d{1,2}[.)]\s+(.*)$/.exec(line);
+      if (bullet || numbered) {
+        var tag = bullet ? 'UL' : 'OL';
+        if (!list || list.tagName !== tag) {
+          list = document.createElement(tag);
           container.appendChild(list);
         }
         var item = document.createElement('li');
-        appendInline(item, bullet[1]);
+        appendInline(item, (bullet || numbered)[1]);
         list.appendChild(item);
         paragraph = null;
         return;
