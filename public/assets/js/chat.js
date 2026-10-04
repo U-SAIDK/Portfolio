@@ -239,4 +239,50 @@
       clearTimeout(timer);
     });
   }
+
+  /* ── Fallback: retrieval in the browser ──────────────────── */
+
+  var localEngine = null; // Promise<{ RAG, index }>, created on first use
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = function () { reject(new Error('Failed to load ' + src)); };
+      document.head.appendChild(script);
+    });
+  }
+
+  function getLocalEngine() {
+    if (!localEngine) {
+      localEngine = Promise.all([
+        window.PortfolioRAG ? Promise.resolve() : loadScript('assets/js/rag-engine.js'),
+        fetch('assets/data/knowledge.json').then(function (response) {
+          if (!response.ok) throw new Error('knowledge.json ' + response.status);
+          return response.json();
+        }),
+      ]).then(function (results) {
+        return { RAG: window.PortfolioRAG, index: window.PortfolioRAG.createIndex(results[1]) };
+      }).catch(function (error) {
+        localEngine = null; // allow a retry on the next question
+        throw error;
+      });
+    }
+    return localEngine;
+  }
+
+  function lastUserQuestion() {
+    for (var i = history.length - 1; i >= 0; i--) {
+      if (history[i].role === 'user') return history[i].content;
+    }
+    return '';
+  }
+
+  function askLocal(question) {
+    return getLocalEngine().then(function (engine) {
+      var result = engine.RAG.answer(engine.index, question, lastUserQuestion());
+      return { answer: result.answer, sources: result.sources, mode: 'local' };
+    });
+  }
 })();
