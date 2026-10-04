@@ -465,39 +465,71 @@
     var pelvis = mesh(roundedBox(0.3, 0.2, 0.4, 0.07), mShellDark);
     pelvis.position.set(0, 0.3, 0.02);
     robot.add(pelvis);
-    /* ARMS */
+
+    /* ARMS — shoulder pivot → upper arm → elbow pivot → forearm → hand.
+       Two real pivots per arm so it can raise and wave, not just swing. */
     function makeArm(side) {
       var ag = new T.Group();
-      ag.position.set(side * 0.76, 1.22, 0);
-      ag.rotation.z = side * -0.10;
+      ag.position.set(side * 0.66, 1.3, 0);
 
-      var ua = mesh(new T.CapsuleGeometry(0.115, 0.40, 8, 12), mBlack.clone());
-      ua.position.set(0, -0.23, 0);
+      var ua = mesh(new T.CapsuleGeometry(0.105, 0.3, 8, 20), mShell);
+      ua.position.set(side * 0.06, -0.3, 0);
       ag.add(ua);
 
-      var elbow = new T.Mesh(new T.SphereGeometry(0.125, 12, 10), mDark.clone());
-      elbow.position.set(0, -0.52, 0);
-      ag.add(elbow);
+      var elbowG = new T.Group();
+      elbowG.position.set(side * 0.06, -0.56, 0);
+      ag.add(elbowG);
 
-      var fa = mesh(new T.CapsuleGeometry(0.093, 0.36, 8, 12), mBlack.clone());
-      fa.position.set(0, -0.80, 0.04);
-      ag.add(fa);
+      var elbow = mesh(new T.SphereGeometry(0.105, 20, 16), mMetal);
+      elbowG.add(elbow);
+      var elbowCap = mesh(new T.CylinderGeometry(0.06, 0.06, 0.225, 20), mMetalDark);
+      elbowCap.rotation.x = PI / 2;
+      elbowG.add(elbowCap);
 
-      var fring = new T.Mesh(new T.TorusGeometry(0.105, 0.017, 6, 20), mBlue.clone());
-      fring.position.set(0, -0.72, 0.04);
-      ag.add(fring);
+      // Forearm flares toward the wrist like a gauntlet.
+      var fa = mesh(new T.CylinderGeometry(0.085, 0.112, 0.36, 24), mShell);
+      fa.position.set(0, -0.26, 0);
+      elbowG.add(fa);
+      var faTop = mesh(new T.SphereGeometry(0.085, 20, 12, 0, PI * 2, 0, PI / 2), mShell);
+      faTop.position.set(0, -0.08, 0);
+      elbowG.add(faTop);
 
-      var hand = mesh(new T.SphereGeometry(0.118, 12, 10), mBlack.clone());
-      hand.scale.set(1, 0.76, 0.76);
-      hand.position.set(0, -1.07, 0.04);
-      ag.add(hand);
+      var cuff = new T.Mesh(new T.TorusGeometry(0.113, 0.012, 8, 32), mBlue);
+      cuff.rotation.x = PI / 2;
+      cuff.position.set(0, -0.4, 0);
+      elbowG.add(cuff);
 
+      var wrist = mesh(new T.CylinderGeometry(0.06, 0.07, 0.07, 18), mMetalDark);
+      wrist.position.set(0, -0.475, 0);
+      elbowG.add(wrist);
+
+      // Hand: palm plus three fingers and a thumb, slightly curled.
+      var hand = new T.Group();
+      hand.position.set(0, -0.56, 0);
+      elbowG.add(hand);
+
+      var palm = mesh(roundedBox(0.15, 0.13, 0.085, 0.035), mShellDark);
+      palm.position.y = -0.02;
+      hand.add(palm);
+
+      for (var f = -1; f <= 1; f++) {
+        var finger = mesh(new T.CapsuleGeometry(0.02, 0.075, 4, 10), mMetalDark);
+        finger.position.set(f * 0.045, -0.135, 0.012);
+        finger.rotation.x = -0.22;
+        hand.add(finger);
+      }
+      var thumb = mesh(new T.CapsuleGeometry(0.021, 0.055, 4, 10), mMetalDark);
+      thumb.position.set(side * -0.085, -0.05, 0.03);
+      thumb.rotation.z = side * -0.7;
+      hand.add(thumb);
+
+      ag.userData.elbow = elbowG;
+      ag.userData.hand = hand;
       return ag;
     }
     var leftArm = makeArm(-1);
     var rightArm = makeArm(1);
     robot.add(leftArm, rightArm);
-
     /* LEGS */
     function makeLeg(side) {
       var lg = new T.Group();
