@@ -436,6 +436,118 @@
     "I can only answer questions about Usaid, and I couldn't find that in his portfolio or resume. " +
     'Try asking about his skills, projects, experience, certifications or education, or email him at usaidk.tech@gmail.com.';
 
+  /* ── Extractive answer ───────────────────────────────────── */
+
+  var MAX_UNITS = 6;          // bullets/sentences quoted from the best chunk
+  var SHORT_CHUNK_WORDS = 130; // chunks at or under this are quoted whole
+
+  // Splits a chunk into quotable units: each bullet / numbered line is
+  // one unit, and prose paragraphs are split into sentences.
+  function splitUnits(text) {
+    var units = [];
+    text.split('\n').forEach(function (line) {
+      line = line.trim();
+      if (!line) return;
+      if (/^(-|\d+\.)\s+/.test(line)) {
+        units.push({ text: line.replace(/^(-|\d+\.)\s+/, ''), bullet: true });
+        return;
+      }
+      // Sentence boundary = terminal punctuation followed by a capital;
+      // avoids breaking on "Pvt. Ltd.", "B.Sc. (CS)" and version numbers.
+      line.split(/(?<=[.!?])\s+(?=[A-Z"])/).forEach(function (sentence) {
+        if (sentence.trim()) units.push({ text: sentence.trim(), bullet: false });
+      });
+    });
+    return units;
+  }
+
+  function scoreUnit(index, unitText, weights) {
+    var terms = unique(tokenize(unitText));
+    var score = 0;
+    for (var i = 0; i < terms.length; i++) {
+      if (weights[terms[i]]) score += weights[terms[i]] * (index.idf[terms[i]] || 0);
+    }
+    return score;
+  }
+
+  function wordCount(text) { return text.split(/\s+/).length; }
+
+  function render(units) {
+    var out = [];
+    units.forEach(function (unit, i) {
+      if (unit.bullet) {
+        out.push((i && !units[i - 1].bullet ? '\n' : '') + '- ' + unit.text);
+      } else if (i && !units[i - 1].bullet) {
+        out[out.length - 1] += ' ' + unit.text;
+      } else {
+        out.push((i ? '\n' : '') + unit.text);
+      }
+    });
+    return out.join('\n');
+  }
+
+  /**
+   * Composes an answer straight from retrieved chunks, with no language
+   * model: quote the best chunk (whole if short, otherwise its lead
+   * sentence plus the units that best match the question).
+   * Used when no LLM is configured, when the LLM call fails, and in the
+   * browser when the API is unreachable.
+   */
+  function composeAnswer(index, query, hits) {
+    if (!hits || !hits.length) return OUT_OF_SCOPE;
+
+    var weights = buildQueryTerms(query).weights;
+    var best = hits[0].chunk;
+    if (wordCount(best.text) <= SHORT_CHUNK_WORDS) return best.text;
+
+    var units = splitUnits(best.text);
+    var scored = units.map(function (unit, i) {
+      return { unit: unit, i: i, score: scoreUnit(index, unit.text, weights) };
+    });
+
+    // Always keep the lead sentence: it names the subject, so the bullets
+    // that follow make sense out of context.
+    var keep = Object.create(null);
+    keep[0] = true;
+    var matching = scored.filter(function (s) { return s.i > 0 && s.score > 0; })
+      .sort(function (a, b) { return b.score - a.score || a.i - b.i; })
+      .slice(0, MAX_UNITS - 1);
+
+    // Nothing in the body matched specifically (the hit came from the
+    // title/tags, e.g. a broad "tell me about X"): the whole chunk is the
+    // answer, and cherry-picking lines would only truncate it arbitrarily.
+    if (matching.length < 2) return best.text;
+    matching.forEach(function (s) { keep[s.i] = true; });
+
+    return render(units.filter(function (_, i) { return keep[i]; }));
+  }
+
+  /**
+   * End-to-end retrieval-only answer: small talk -> search -> compose.
+   * Returns { answer, sources, confident }.
+   */
+  function answer(index, question, previousQuestion) {
+    var chat = smallTalk(question);
+    if (chat) return { answer: chat, sources: [], confident: true };
+
+    var result = search(index, prepareQuery(question, previousQuestion));
+    if (!result.confident) return { answer: OUT_OF_SCOPE, sources: [], confident: false };
+
+    return {
+      answer: composeAnswer(index, question, result.hits),
+      sources: toSources(result.hits),
+      confident: true,
+    };
+  }
+
+  // Public shape of a citation: enough for the UI to label a chip and
+  // link to the page section, without shipping the chunk text twice.
+  function toSources(hits, limit) {
+    return hits.slice(0, limit || 3).map(function (hit) {
+      return { id: hit.chunk.id, title: hit.chunk.title, section: hit.chunk.section };
+    });
+  }
+
   return {
     tokenize: tokenize,
     normalize: normalize,
@@ -446,6 +558,9 @@
     contextualQuery: contextualQuery,
     prepareQuery: prepareQuery,
     smallTalk: smallTalk,
+    composeAnswer: composeAnswer,
+    answer: answer,
+    toSources: toSources,
     OUT_OF_SCOPE: OUT_OF_SCOPE,
   };
 }));
