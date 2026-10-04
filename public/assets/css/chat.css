@@ -210,7 +210,6 @@
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 2px;
-  word-break: break-all;
 }
 
 .chat-msg a:hover {
