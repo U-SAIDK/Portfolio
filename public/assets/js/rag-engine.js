@@ -82,13 +82,43 @@
       // Drop lone letters ("a", "s" from possessives) but keep "c" (the
       // language), "ai" and digits like "5" in "JUnit 5".
       if (w.length === 1 && w !== 'c' && !/[0-9]/.test(w)) continue;
-      out.push(w);
+      out.push(stem(w));
     }
     return out;
+  }
+
+  /* ── Stemmer ─────────────────────────────────────────────── */
+
+  // Deliberately conservative: only the suffixes that matter for matching
+  // a visitor's phrasing to the corpus (plurals, -ing, -ed). A full Porter
+  // stemmer conflates too much on a corpus this small ("university" and
+  // "universal", "operate" and "operations").
+  var STEM_EXCEPTIONS = toSet(
+    'aws kubernetes jenkins redis express sass css js class access process address business ' +
+    'analysis series status devops gitops this is was has does goes news ios kafka vitest ' +
+    'thing string spring during testing nothing something anything building engineering'
+  );
+
+  function stem(word) {
+    if (word.length < 4 || STEM_EXCEPTIONS[word] || /[0-9]/.test(word)) return word;
+    if (/ies$/.test(word) && word.length > 4) return word.slice(0, -3) + 'y';
+    if (/(sses|shes|ches|xes|zes)$/.test(word)) return word.slice(0, -2);
+    if (/s$/.test(word) && !/(ss|us|is)$/.test(word)) return word.slice(0, -1);
+    if (/ing$/.test(word) && word.length > 5) return undouble(word.slice(0, -3));
+    if (/ed$/.test(word) && word.length > 4 && !/eed$/.test(word)) return undouble(word.slice(0, -2));
+    return word;
+  }
+
+  // "running" -> "runn" -> "run"; leaves "skill"/"call"-style roots alone.
+  function undouble(root) {
+    var n = root.length;
+    if (n > 2 && root[n - 1] === root[n - 2] && !/[lsz]/.test(root[n - 1])) return root.slice(0, -1);
+    return root;
   }
 
   return {
     tokenize: tokenize,
     normalize: normalize,
+    stem: stem,
   };
 }));
