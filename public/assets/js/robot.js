@@ -355,67 +355,116 @@
       neckRing.position.set(0, -0.41 - nr * 0.065, 0);
       headG.add(neckRing);
     }
+
     /* UPPER TORSO */
     var torsoG = new T.Group();
     torsoG.position.set(0, 1.1, 0);
     robot.add(torsoG);
 
-    var chest = mesh(new T.BoxGeometry(1.0, 0.84, 0.54), mBlack.clone());
+    var chest = mesh(roundedBox(1.04, 0.86, 0.6, 0.2), mShell);
     torsoG.add(chest);
 
-    var panel = new T.Mesh(
-      new T.BoxGeometry(0.60, 0.42, 0.04),
-      new T.MeshStandardMaterial({ color: 0x080814, metalness: 0.95, roughness: 0.04 })
-    );
-    panel.position.set(0, 0.06, 0.285);
+    // Darker flank panels break up the chest into separate plates.
+    function makeFlank(side) {
+      var p = mesh(roundedBox(0.12, 0.6, 0.5, 0.05), mShellDark);
+      p.position.set(side * 0.5, -0.04, 0);
+      return p;
+    }
+    torsoG.add(makeFlank(-1), makeFlank(1));
+
+    // Recessed glass window housing the reactor.
+    var panel = new T.Mesh(roundedBox(0.6, 0.42, 0.05, 0.09), mGlass);
+    panel.position.set(0, 0.07, 0.288);
     torsoG.add(panel);
 
-    var reactor = new T.Mesh(new T.SphereGeometry(0.092, 16, 16), mReact);
-    reactor.position.set(0, 0.06, 0.31);
+    var panelFrame = new T.Mesh(roundedBox(0.66, 0.48, 0.03, 0.11), mMetalDark);
+    panelFrame.position.set(0, 0.07, 0.282);
+    torsoG.add(panelFrame);
+
+    var reactor = new T.Mesh(new T.SphereGeometry(0.085, 24, 20), mReact);
+    reactor.scale.z = 0.45;
+    reactor.position.set(0, 0.07, 0.318);
     torsoG.add(reactor);
 
-    var reactRing = new T.Mesh(new T.TorusGeometry(0.135, 0.019, 8, 32), mBlue.clone());
-    reactRing.position.set(0, 0.06, 0.30);
+    var reactBezel = new T.Mesh(new T.TorusGeometry(0.118, 0.016, 10, 40), mMetal);
+    reactBezel.position.set(0, 0.07, 0.318);
+    torsoG.add(reactBezel);
+
+    var reactRing = new T.Mesh(new T.TorusGeometry(0.158, 0.008, 8, 48), mBlue);
+    reactRing.position.set(0, 0.07, 0.316);
     torsoG.add(reactRing);
 
-    // Shoulder pads
+    // Status LEDs in the window's corner.
+    var statusLeds = [];
+    for (var sl = 0; sl < 3; sl++) {
+      var led = new T.Mesh(new T.CircleGeometry(0.011, 12), new T.MeshBasicMaterial({ color: 0x4be3ff, toneMapped: false, transparent: true }));
+      led.position.set(0.17 + sl * 0.035, -0.08, 0.3145);
+      statusLeds.push(led);
+      torsoG.add(led);
+    }
+
+    // Lower chest vent slats.
+    for (var vs = 0; vs < 3; vs++) {
+      var slat = new T.Mesh(roundedBox(0.3, 0.018, 0.02, 0.008), mMetalDark);
+      slat.position.set(0, -0.25 - vs * 0.04, 0.297);
+      torsoG.add(slat);
+    }
+
+    // Collar ring where the neck bellows meet the chest.
+    var collar = mesh(new T.CylinderGeometry(0.2, 0.25, 0.1, 28), mMetalDark);
+    collar.position.set(0, 0.46, 0);
+    torsoG.add(collar);
+    var collarRing = new T.Mesh(new T.TorusGeometry(0.205, 0.012, 8, 40), mMetal);
+    collarRing.rotation.x = PI / 2;
+    collarRing.position.set(0, 0.51, 0);
+    torsoG.add(collarRing);
+
+    // Shoulders: a metal ball joint under a shell pauldron.
     function makeShoulder(side) {
       var sg = new T.Group();
-      sg.position.set(side * 0.77, 0.18, 0);
-      var pad = mesh(new T.SphereGeometry(0.25, 16, 12), mBlack.clone());
-      pad.scale.set(1, 0.70, 0.70);
+      sg.position.set(side * 0.62, 0.22, 0);
+      var joint = mesh(new T.SphereGeometry(0.17, 24, 18), mMetal);
+      sg.add(joint);
+      var pad = mesh(new T.SphereGeometry(0.235, 32, 16, 0, PI * 2, 0, PI * 0.56), mShell);
+      pad.scale.set(1.05, 0.9, 1.0);
+      pad.position.set(side * 0.03, 0.03, 0);
+      pad.rotation.z = side * -0.38;
       sg.add(pad);
-      var stripe = new T.Mesh(new T.TorusGeometry(0.21, 0.026, 6, 24, PI), mBlue.clone());
-      stripe.rotation.z = PI / 2;
-      stripe.position.z = 0.04;
+      var stripe = new T.Mesh(new T.TorusGeometry(0.2, 0.011, 8, 32, PI), mBlue);
+      stripe.rotation.y = PI / 2;
+      stripe.rotation.x = side * -0.38;
+      stripe.position.set(side * 0.03, 0.035, 0);
       sg.add(stripe);
       return sg;
     }
-    torsoG.add(makeShoulder(-1));
-    torsoG.add(makeShoulder(1));
+    torsoG.add(makeShoulder(-1), makeShoulder(1));
 
-    // Collar
-    var collar = mesh(new T.CylinderGeometry(0.17, 0.21, 0.17, 16), mDark.clone());
-    collar.position.set(0, 0.49, 0);
-    torsoG.add(collar);
-
-    /* ABDOMEN */
+    /* ABDOMEN — segmented bellows so the waist reads as flexible */
     var abdG = new T.Group();
-    abdG.position.set(0, 0.72, 0);
+    abdG.position.set(0, 0.6, 0);
     robot.add(abdG);
 
-    abdG.add(mesh(new T.CylinderGeometry(0.37, 0.33, 0.30, 16), mDark.clone()));
-
-    var belt = new T.Mesh(new T.TorusGeometry(0.38, 0.032, 6, 32), mViolet.clone());
-    belt.rotation.x = PI / 2;
-    belt.position.y = -0.10;
-    abdG.add(belt);
+    abdG.add(mesh(new T.CylinderGeometry(0.27, 0.3, 0.26, 24), mMetalDark));
+    for (var ar = 0; ar < 3; ar++) {
+      var seg = mesh(new T.TorusGeometry(0.31 + (ar === 1 ? 0.01 : 0), 0.05, 12, 36), mRubber);
+      seg.rotation.x = PI / 2;
+      seg.scale.set(1, 0.78, 1);
+      seg.position.y = 0.085 - ar * 0.085;
+      abdG.add(seg);
+    }
 
     /* HIPS */
-    var hips = mesh(new T.BoxGeometry(0.82, 0.25, 0.40), mBlack.clone());
-    hips.position.set(0, 0.48, 0);
+    var hips = mesh(roundedBox(0.84, 0.26, 0.46, 0.1), mShell);
+    hips.position.set(0, 0.4, 0);
     robot.add(hips);
 
+    var belt = new T.Mesh(roundedBox(0.86, 0.035, 0.475, 0.012), mViolet);
+    belt.position.set(0, 0.49, 0);
+    robot.add(belt);
+
+    var pelvis = mesh(roundedBox(0.3, 0.2, 0.4, 0.07), mShellDark);
+    pelvis.position.set(0, 0.3, 0.02);
+    robot.add(pelvis);
     /* ARMS */
     function makeArm(side) {
       var ag = new T.Group();
