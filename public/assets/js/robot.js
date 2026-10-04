@@ -1,8 +1,14 @@
 /**
- * Hero robot widget — a small procedural Three.js character that tracks
- * the cursor. Lazy-loaded: Three.js (~600KB) is only fetched on desktop
- * viewports (>=1100px) and only once the widget scrolls into view, so it
- * never costs anything on mobile or below the fold.
+ * Hero robot widget — a procedural Three.js character that tracks the
+ * cursor and fronts the portfolio assistant (see chat.js). Lazy-loaded:
+ * Three.js (~600KB) is only fetched on desktop viewports (>=1100px) and
+ * only once the widget scrolls into view, so it never costs anything on
+ * mobile or below the fold.
+ *
+ * Look: everything is still built from primitives (no model download),
+ * but shaded physically — clear-coated shell panels, brushed-metal
+ * joints and a glass visor, all lit by a small procedural "studio"
+ * environment so the surfaces have something real to reflect.
  *
  * Motion model: every rotation/position eases toward its target with
  * frame-rate-independent exponential damping (see `damp`) instead of a
@@ -10,6 +16,11 @@
  * When the cursor is idle (or off-window) the head/torso drift through a
  * slow layered-sine "look around" instead of freezing in place, and a
  * light blink/breathing cycle keeps it feeling alive rather than posed.
+ *
+ * Chat reactions: chat.js dispatches `uk-chat` on <html> with a state
+ * (open / thinking / speaking / closed). The robot waves when the panel
+ * opens, tilts its head and turns its eyes amber while an answer is
+ * being fetched, and animates its mouth while the answer is typed out.
  */
 (function () {
   'use strict';
@@ -54,6 +65,33 @@
       return m;
     }
 
+    // Box with rounded edges, built by extruding a rounded rectangle with
+    // a bevel. Hard-edged BoxGeometry is the single biggest "this is a
+    // primitive" tell: real moulded parts always have a radius that
+    // catches a highlight.
+    function roundedBox(w, h, d, r) {
+      var bevel = Math.min(r, d / 2 - 0.001);
+      var iw = w - bevel * 2, ih = h - bevel * 2;
+      var cr = Math.max(0.001, r - bevel);
+      var x = -iw / 2, y = -ih / 2;
+      var s = new T.Shape();
+      s.moveTo(x + cr, y);
+      s.lineTo(x + iw - cr, y);
+      s.quadraticCurveTo(x + iw, y, x + iw, y + cr);
+      s.lineTo(x + iw, y + ih - cr);
+      s.quadraticCurveTo(x + iw, y + ih, x + iw - cr, y + ih);
+      s.lineTo(x + cr, y + ih);
+      s.quadraticCurveTo(x, y + ih, x, y + ih - cr);
+      s.lineTo(x, y + cr);
+      s.quadraticCurveTo(x, y, x + cr, y);
+      var g = new T.ExtrudeGeometry(s, {
+        depth: d - bevel * 2, bevelEnabled: true, bevelThickness: bevel,
+        bevelSize: bevel, bevelSegments: 5, curveSegments: 10,
+      });
+      g.center();
+      return g;
+    }
+
     /* ── container ───────────────────────────────────────── */
     // The canvas goes in its own layer so the launcher buttons that
     // share #robot-widget stay above it and keep their pointer events.
@@ -69,15 +107,18 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = T.PCFSoftShadowMap;
     renderer.toneMapping = T.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.05;
     renderer.domElement.style.cssText = 'display:block;pointer-events:none;';
     el.appendChild(renderer.domElement);
 
     /* ── scene / camera ──────────────────────────────────── */
+    // A longer lens from further back than before: less perspective
+    // distortion, so the proportions read as a product shot rather than
+    // a wide-angle toy, and it leaves headroom for the speech bubble.
     var scene = new T.Scene();
-    var camera = new T.PerspectiveCamera(46, CW / CH, 0.1, 100);
-    camera.position.set(0, 0.5, 6.2);
-    camera.lookAt(0, 0.5, 0);
+    var camera = new T.PerspectiveCamera(36, CW / CH, 0.1, 100);
+    camera.position.set(0, 1.16, 7.1);
+    camera.lookAt(0, 1.08, 0);
 
     /* ── pointer tracking ─────────────────────────────────
        mx/my are the raw cursor target in [-1, 1] viewport space. When the
@@ -98,7 +139,6 @@
     }, { passive: true });
     document.addEventListener('mouseleave', function () { pointerInWindow = false; }, { passive: true });
     window.addEventListener('blur', function () { pointerInWindow = false; }, { passive: true });
-
     /* ── lights ──────────────────────────────────────────── */
     scene.add(new T.AmbientLight(0x1a1a2e, 3.5));
 
