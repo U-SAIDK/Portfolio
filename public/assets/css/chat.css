@@ -282,3 +282,36 @@
   background: var(--primary-soft-2);
   color: var(--primary);
 }
+
+/* ── Suggested questions ─────────────────────────────────── */
+.chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 4px 14px 10px;
+  flex-shrink: 0;
+}
+
+.chat-suggestions:empty {
+  display: none;
+}
+
+.chat-suggestion {
+  padding: 7px 12px;
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s, transform 0.25s var(--ease);
+}
+
+.chat-suggestion:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
