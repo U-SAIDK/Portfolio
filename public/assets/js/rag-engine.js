@@ -116,9 +116,125 @@
     return root;
   }
 
+  /* ── Query expansion ─────────────────────────────────────── */
+
+  // Visitor vocabulary -> corpus vocabulary. Expansion terms are added to
+  // the query at reduced weight (see EXPANSION_WEIGHT) so an exact match
+  // on what the visitor actually typed always outranks a synonym match.
+  var SYNONYMS = {
+    cv: 'resume',
+    resume: 'cv',
+    job: 'experience work role',
+    jobs: 'experience work role',
+    work: 'experience',
+    worked: 'experience',
+    working: 'experience',
+    career: 'experience history',
+    employer: 'company experience',
+    company: 'employer experience',
+    employed: 'experience company',
+    hire: 'available opportunities contact',
+    hiring: 'available opportunities contact',
+    recruit: 'available opportunities contact',
+    available: 'opportunities',
+    freelance: 'opportunities available',
+    reach: 'contact email',
+    mail: 'email contact',
+    email: 'contact',
+    phone: 'contact',
+    number: 'phone contact',
+    call: 'phone contact',
+    linkedin: 'contact',
+    github: 'contact',
+    social: 'linkedin github contact',
+    live: 'location based',
+    lives: 'location based',
+    located: 'location based',
+    city: 'location pune',
+    country: 'location india',
+    school: 'education college university',
+    college: 'education university',
+    university: 'education college',
+    degree: 'education bsc',
+    studied: 'education degree',
+    study: 'education degree',
+    graduate: 'education degree',
+    graduated: 'education degree',
+    qualification: 'education degree certification',
+    gpa: 'cgpa grade',
+    marks: 'cgpa grade',
+    cert: 'certification',
+    certs: 'certification',
+    certified: 'certification',
+    certificate: 'certification',
+    credential: 'certification',
+    stack: 'skills technologies',
+    tech: 'skills technologies',
+    technologies: 'skills',
+    technology: 'skills',
+    tools: 'skills',
+    expertise: 'skills',
+    good: 'skills',
+    strengths: 'skills summary',
+    built: 'project',
+    made: 'project',
+    created: 'project',
+    portfolio: 'project website',
+    apps: 'project',
+    app: 'project',
+    ai: 'llm rag generative',
+    llm: 'ai rag',
+    ml: 'ai',
+    bot: 'assistant chatbot robot',
+    chatbot: 'assistant robot',
+    robot: 'assistant chatbot',
+    yourself: 'assistant',
+    database: 'postgresql sql',
+    db: 'database postgresql sql',
+    container: 'docker kubernetes',
+    containers: 'docker kubernetes',
+    deploy: 'deployment cicd',
+    deployment: 'cicd',
+    pipeline: 'cicd',
+    java: 'spring',
+    achievements: 'impact highlights',
+    accomplishments: 'impact highlights',
+    intern: 'internship',
+    internship: 'intern',
+    speak: 'languages spoken english',
+    salary: 'available opportunities',
+    experience: 'work',
+    background: 'summary experience',
+    hobbies: 'interests',
+  };
+
+  var EXPANSION_WEIGHT = 0.4;
+
+  /**
+   * Query string -> { term: weight }. Terms the visitor typed get weight
+   * 1; synonym expansions get EXPANSION_WEIGHT unless also typed.
+   */
+  function buildQueryTerms(query) {
+    var weights = Object.create(null);
+    var rawWords = normalize(query).split(/[^a-z0-9]+/);
+    var typed = tokenize(query);
+    var i;
+    for (i = 0; i < typed.length; i++) weights[typed[i]] = 1;
+    for (i = 0; i < rawWords.length; i++) {
+      var expansion = SYNONYMS[rawWords[i]];
+      if (!expansion) continue;
+      var extra = tokenize(expansion);
+      for (var j = 0; j < extra.length; j++) {
+        if (!weights[extra[j]]) weights[extra[j]] = EXPANSION_WEIGHT;
+      }
+    }
+    return { weights: weights, typed: typed };
+  }
+
   return {
     tokenize: tokenize,
     normalize: normalize,
     stem: stem,
+    buildQueryTerms: buildQueryTerms,
   };
 }));
