@@ -386,4 +386,117 @@
         if (panel.classList.contains('is-open')) input.focus({ preventScroll: true });
       });
   }
+
+  /* ── Panel open / close ──────────────────────────────────── */
+
+  var greeted = false;
+  var lastTrigger = null;
+
+  function isOpen() {
+    return panel.classList.contains('is-open');
+  }
+
+  function setExpanded(value) {
+    for (var i = 0; i < openers.length; i++) {
+      if (openers[i].hasAttribute('aria-expanded')) openers[i].setAttribute('aria-expanded', String(value));
+    }
+  }
+
+  function open(trigger) {
+    if (isOpen()) { input.focus({ preventScroll: true }); return; }
+    lastTrigger = trigger || document.activeElement;
+    panel.classList.add('is-open');
+    root.classList.add('chat-open');
+    setExpanded(true);
+    updateFab();
+
+    if (!greeted) {
+      greeted = true;
+      addMessage('bot', GREETING);
+      renderSuggestions(ask);
+      // Warm the fallback engine while the visitor reads the greeting,
+      // so a first question never waits on it. Failure is fine here.
+      getLocalEngine().catch(function () {});
+    }
+
+    emitState('open');
+    // Focus after the open transition starts; focusing a visibility:hidden
+    // element is a no-op in some browsers.
+    setTimeout(function () { input.focus({ preventScroll: true }); }, 60);
+  }
+
+  function close() {
+    if (!isOpen()) return;
+    panel.classList.remove('is-open');
+    root.classList.remove('chat-open');
+    setExpanded(false);
+    updateFab();
+    emitState('closed');
+    // Return focus to whatever opened the panel, if it's still focusable.
+    if (lastTrigger && typeof lastTrigger.focus === 'function' && lastTrigger.offsetParent !== null) {
+      lastTrigger.focus({ preventScroll: true });
+    }
+  }
+
+  /* ── Floating launcher visibility ────────────────────────── */
+
+  // The robot is the launcher while it's on screen; the FAB takes over
+  // when it isn't (scrolled past the hero, <1100px, reduced motion).
+  var robotOnScreen = false;
+
+  function updateFab() {
+    if (!fab) return;
+    fab.classList.toggle('is-visible', !robotOnScreen && !isOpen());
+  }
+
+  if (robotWidget && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      // A display:none widget never intersects, which is exactly the
+      // "robot not rendered" case.
+      robotOnScreen = entries[0].isIntersecting && entries[0].intersectionRatio > 0.35;
+      updateFab();
+    }, { threshold: [0, 0.35, 0.6] }).observe(robotWidget);
+  }
+  updateFab();
+
+  /* ── Wiring ──────────────────────────────────────────────── */
+
+  for (var i = 0; i < openers.length; i++) {
+    openers[i].addEventListener('click', function (event) { open(event.currentTarget); });
+  }
+
+  closeBtn.addEventListener('click', close);
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    ask(input.value);
+  });
+
+  input.addEventListener('input', updateSendState);
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && isOpen()) {
+      event.stopPropagation();
+      close();
+    }
+  });
+
+  // Source chips jump to a page section; on a phone the bottom sheet
+  // would cover it, so get out of the way.
+  log.addEventListener('click', function (event) {
+    var chip = event.target.closest && event.target.closest('.chat-source');
+    if (chip && window.matchMedia('(max-width: 560px)').matches) close();
+  });
+
+  // main.js binds the custom cursor's hover state to elements that exist
+  // at load; chips and links here are created later, so delegate.
+  panel.addEventListener('mouseover', function (event) {
+    if (event.target.closest && event.target.closest('button, a, input')) document.body.classList.add('cur-hover');
+  });
+  panel.addEventListener('mouseout', function (event) {
+    if (event.target.closest && event.target.closest('button, a, input')) document.body.classList.remove('cur-hover');
+  });
+
+  // Small debugging/automation surface; also lets other scripts open it.
+  window.PortfolioChat = { open: open, close: close, ask: ask };
 })();
