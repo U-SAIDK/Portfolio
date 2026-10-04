@@ -285,4 +285,105 @@
       return { answer: result.answer, sources: result.sources, mode: 'local' };
     });
   }
+
+  /* ── Conversation ────────────────────────────────────────── */
+
+  var busy = false;
+
+  // Tells the robot what the assistant is doing (robot.js listens).
+  function emitState(state) {
+    root.dispatchEvent(new CustomEvent('uk-chat', { detail: { state: state } }));
+  }
+
+  function setBusy(value) {
+    busy = value;
+    log.setAttribute('aria-busy', String(value));
+    updateSendState();
+  }
+
+  function updateSendState() {
+    sendBtn.disabled = busy || !input.value.trim();
+  }
+
+  function addTypingIndicator() {
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-msg is-bot chat-typing';
+    bubble.setAttribute('aria-label', 'Assistant is typing');
+    for (var i = 0; i < 3; i++) bubble.appendChild(document.createElement('span'));
+    log.appendChild(bubble);
+    scrollToEnd();
+    return bubble;
+  }
+
+  // Reveals the answer word by word while the robot "speaks". The full
+  // text is known up front, so each frame re-renders a longer prefix
+  // through the same safe renderer; no partial markup is ever shown.
+  var WORDS_PER_TICK = 3;
+  var TICK_MS = 34;
+
+  function typeAnswer(bubble, text) {
+    if (REDUCED) {
+      renderAnswer(bubble, text);
+      keepInView(bubble);
+      return Promise.resolve();
+    }
+    return new Promise(function (resolve) {
+      var tokens = text.split(/(\s+)/);
+      var shown = 0;
+      (function tick() {
+        // A closed panel shouldn't keep animating: finish immediately.
+        shown = panel.classList.contains('is-open') ? Math.min(tokens.length, shown + WORDS_PER_TICK * 2) : tokens.length;
+        renderAnswer(bubble, tokens.slice(0, shown).join(''));
+        keepInView(bubble);
+        if (shown < tokens.length) setTimeout(tick, TICK_MS);
+        else resolve();
+      })();
+    });
+  }
+
+  function remember(role, content) {
+    history.push({ role: role, content: content });
+    if (history.length > MAX_HISTORY_TURNS * 2) history = history.slice(-MAX_HISTORY_TURNS * 2);
+  }
+
+  function ask(rawQuestion) {
+    var question = String(rawQuestion || '').trim();
+    if (!question || busy) return;
+
+    clearSuggestions();
+    addMessage('user', question);
+    input.value = '';
+    setBusy(true);
+    emitState('thinking');
+    var typing = addTypingIndicator();
+
+    askApi(question)
+      .catch(function () { return askLocal(question); })
+      .then(function (result) {
+        typing.remove();
+
+        if (result.error) {
+          addMessage('error', result.error);
+          return;
+        }
+
+        remember('user', question);
+        remember('assistant', result.answer);
+
+        var bubble = addMessage('bot', '');
+        emitState('speaking');
+        return typeAnswer(bubble, result.answer).then(function () {
+          addSources(bubble, result.sources);
+        });
+      })
+      .catch(function () {
+        typing.remove();
+        addMessage('error', "Sorry, I couldn't load an answer just now. You can reach Usaid directly at usaidk.tech@gmail.com.");
+      })
+      .then(function () {
+        setBusy(false);
+        emitState(panel.classList.contains('is-open') ? 'open' : 'closed');
+        if (panel.classList.contains('is-open')) input.focus({ preventScroll: true });
+      });
+  }
 })();
