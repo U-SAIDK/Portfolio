@@ -231,10 +231,75 @@
     return { weights: weights, typed: typed };
   }
 
+  /* ── Index ───────────────────────────────────────────────── */
+
+  // BM25 parameters. k1 is a little above the textbook 1.2 because the
+  // chunks are short and a repeated term really is a relevance signal;
+  // b is the standard length normalisation.
+  var K1 = 1.4;
+  var B = 0.75;
+
+  // BM25F-style field weights: a hit in the title or the hand-written
+  // retrieval tags is worth several body hits.
+  var FIELD_WEIGHTS = { title: 3, tags: 2.5, text: 1 };
+
+  /**
+   * Builds an in-memory inverted index over the knowledge chunks.
+   * `knowledge` is the parsed knowledge.json ({ chunks: [...] }) or a bare
+   * array of chunks. Cheap enough (~1ms for 40 chunks) to run per cold
+   * start; callers should still build it once and reuse it.
+   */
+  function createIndex(knowledge) {
+    var chunks = Array.isArray(knowledge) ? knowledge : (knowledge && knowledge.chunks) || [];
+    var docs = [];
+    var postings = Object.create(null); // term -> [{ doc, tf }]
+    var totalLength = 0;
+
+    chunks.forEach(function (chunk, docId) {
+      var tf = Object.create(null);
+      var length = 0;
+
+      addField(tokenize(chunk.title), FIELD_WEIGHTS.title);
+      addField(tokenize((chunk.tags || []).join(' ')), FIELD_WEIGHTS.tags);
+      addField(tokenize(chunk.text), FIELD_WEIGHTS.text);
+
+      function addField(terms, weight) {
+        for (var i = 0; i < terms.length; i++) {
+          tf[terms[i]] = (tf[terms[i]] || 0) + weight;
+          length += weight;
+        }
+      }
+
+      for (var term in tf) {
+        (postings[term] || (postings[term] = [])).push({ doc: docId, tf: tf[term] });
+      }
+      docs.push({ chunk: chunk, length: length });
+      totalLength += length;
+    });
+
+    var idf = Object.create(null);
+    var N = docs.length;
+    for (var term in postings) {
+      var df = postings[term].length;
+      // BM25+ style floor (the "+ 1" inside the log) keeps idf positive
+      // even for terms that appear in most chunks.
+      idf[term] = Math.log(1 + (N - df + 0.5) / (df + 0.5));
+    }
+
+    return {
+      docs: docs,
+      postings: postings,
+      idf: idf,
+      avgLength: N ? totalLength / N : 0,
+      size: N,
+    };
+  }
+
   return {
     tokenize: tokenize,
     normalize: normalize,
     stem: stem,
     buildQueryTerms: buildQueryTerms,
+    createIndex: createIndex,
   };
 }));
