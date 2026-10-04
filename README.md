@@ -9,14 +9,20 @@ server for local development without the Netlify CLI.
 ```
 public/                    Static site — Netlify's publish directory
   index.html
-  favicon.svg, usaid.webp, USAID_RESUME.pdf
+  favicon.svg, usaid.webp, USAID_Resume.pdf
   assets/
-    css/style.css          All site styles (design tokens in :root)
+    css/style.css          Entry point — @imports the files below in order
+    css/tokens.css         Design tokens (light default, dark override)
+    css/*.css              base, background, components, layout, sections,
+                           animations, responsive
     js/
-      main.js               Nav, cursor, scroll-reveal, typing effect, Konami egg
-      particles.js           Hero canvas particle background
-      contact-form.js        Contact form validation + submission
-      robot.js                Hero Three.js robot widget (lazy-loaded)
+      main.js               Nav, cursor, typing effect, 3D tilt, Konami egg
+      theme.js              Dark / light toggle + persistence
+      reveal.js             Scroll-reveal observer
+      hero-field.js         Hero interactive particle field
+      contact-form.js       Contact form validation + submission
+      turnstile-init.js     Cloudflare Turnstile widget bootstrap
+      robot.js              Hero Three.js robot widget (lazy-loaded)
 
 netlify/functions/contact.js   Production contact-form endpoint
 server/                        Standalone Express server (local dev only)
