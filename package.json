@@ -7,6 +7,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "test": "node --test tests/",
     "build:knowledge": "node scripts/build-knowledge.js",
     "check:knowledge": "node scripts/build-knowledge.js --check"
   },
