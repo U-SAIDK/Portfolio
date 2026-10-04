@@ -380,6 +380,62 @@
     return question;
   }
 
+  /* ── Small talk ──────────────────────────────────────────── */
+
+  // Greetings and thanks have no retrievable content, so they are caught
+  // before search rather than being reported as "out of scope".
+  var SMALL_TALK = [
+    {
+      test: /^\s*(hi+|hey+|hello+|yo|hola|namaste|salam|good\s+(morning|afternoon|evening)|sup|what'?s\s+up)[\s!.,?]*$/i,
+      reply: "Hi! I'm Usaid's portfolio assistant. Ask me about his skills, projects, work experience, certifications, or how to get in touch.",
+    },
+    {
+      test: /^\s*(thanks?(\s+you)?|thank\s+you(\s+so\s+much)?|thx|ty|cheers|great|nice|cool|awesome|perfect|ok(ay)?|got\s+it)[\s!.,]*$/i,
+      reply: "You're welcome! Anything else you'd like to know about Usaid?",
+    },
+    {
+      test: /^\s*(bye+|goodbye|see\s+(you|ya)|cya)[\s!.,]*$/i,
+      reply: 'Thanks for stopping by! If you want to reach Usaid, his email is usaidk.tech@gmail.com.',
+    },
+  ];
+
+  function smallTalk(question) {
+    for (var i = 0; i < SMALL_TALK.length; i++) {
+      if (SMALL_TALK[i].test.test(question)) return SMALL_TALK[i].reply;
+    }
+    return null;
+  }
+
+  // Questions made entirely of stopwords ("who is he?", "who are you?")
+  // tokenize to nothing. Rewrite the common ones to a canonical query so
+  // they retrieve the chunk that actually answers them.
+  var INTENT_REWRITES = [
+    {
+      test: /\b(who|what)\s+(are|r)\s+(you|u)\b|\babout\s+yourself\b|\bwhat\s+can\s+(you|u)\s+do\b|\byour\s+name\b|\bare\s+you\s+(a\s+)?(real|human|bot|ai)\b/i,
+      query: 'assistant chatbot robot what can you do',
+    },
+    {
+      test: /\bwho\s+is\s+(he|usaid|this|this\s+guy)\b|\bwho'?s\s+usaid\b|\babout\s+(him|usaid)\b|\bwhat\s+does\s+(he|usaid)\s+do\b|\bintroduce\b|\bwho\s+is\s+usaid\s+khan\b/i,
+      query: 'who introduction overview software engineer role',
+    },
+  ];
+
+  function rewriteIntent(question) {
+    for (var i = 0; i < INTENT_REWRITES.length; i++) {
+      if (INTENT_REWRITES[i].test.test(question)) return question + ' ' + INTENT_REWRITES[i].query;
+    }
+    return question;
+  }
+
+  /** The string to actually retrieve on for a visitor question. */
+  function prepareQuery(question, previousQuestion) {
+    return contextualQuery(rewriteIntent(question), previousQuestion);
+  }
+
+  var OUT_OF_SCOPE =
+    "I can only answer questions about Usaid, and I couldn't find that in his portfolio or resume. " +
+    'Try asking about his skills, projects, experience, certifications or education, or email him at usaidk.tech@gmail.com.';
+
   return {
     tokenize: tokenize,
     normalize: normalize,
@@ -388,5 +444,8 @@
     createIndex: createIndex,
     search: search,
     contextualQuery: contextualQuery,
+    prepareQuery: prepareQuery,
+    smallTalk: smallTalk,
+    OUT_OF_SCOPE: OUT_OF_SCOPE,
   };
 }));
