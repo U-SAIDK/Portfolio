@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+backend/node_modules/
+server/node_modules/
 
 # Environment variables (never commit real secrets)
 .env
@@ -19,13 +21,3 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .claude/
-
-# Dependencies
-node_modules/
-backend/node_modules/
-server/node_modules/
-
-# Dependencies
-node_modules/
-backend/node_modules/
-server/node_modules/
