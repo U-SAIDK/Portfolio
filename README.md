@@ -82,9 +82,58 @@ npm start
 that case; everywhere else (Netlify Dev, production) it uses a relative
 `/api/contact` path.
 
+## The robot assistant
+
+Clicking the hero robot (or the floating button once it scrolls away)
+opens a small Q&A panel that answers questions about Usaid from the
+portfolio and resume. It is a retrieval-augmented generation (RAG)
+pipeline with no external services beyond an optional LLM call:
+
+```
+question ──► tokenize + expand synonyms
+         ──► BM25 ranking over knowledge.json (title/tags weighted)
+         ──► confident match? ── no ──► "I can only answer about Usaid"
+                    │ yes
+                    ▼
+         ANTHROPIC_API_KEY set? ── no ──► quote the best passage(s)
+                    │ yes
+                    ▼
+         Claude writes an answer grounded in the top chunks
+         (falls back to quoting if the call fails or times out)
+```
+
+Design choices worth knowing:
+
+- **Retrieval gates generation.** A question with no support in the
+  corpus never reaches the model, so the endpoint can't be used as a
+  general-purpose chatbot and answers stay grounded.
+- **One engine, two runtimes.** `public/assets/js/rag-engine.js` is
+  required by the Netlify function *and* lazy-loaded in the browser. If
+  `/api/chat` is unreachable (static hosting, offline) the panel answers
+  locally from the same corpus instead of showing an error.
+- **Lexical, not embeddings.** ~40 short chunks rank well with BM25 plus
+  a small synonym table; it is deterministic, testable and ships in a few
+  KB rather than a model download.
+- **Abuse limits.** 8 questions/minute and 60/hour per IP, a 500-char
+  question cap, and a daily ceiling on generated answers. These are
+  in-memory per function instance (best effort), so also set a spend
+  limit on the API key.
+
+### Updating what it knows
+
+Edit or add a file in `knowledge/` (format in `knowledge/README.md`), then:
+
+```bash
+npm run build:knowledge   # regenerate public/assets/data/knowledge.json
+npm test                  # retrieval regressions + corpus integrity
+```
+
+`npm test` fails if `knowledge.json` is stale or if one of the pinned
+recruiter-style questions stops retrieving the right chunk.
+
 ## Environment variables
 
-Both backends need the same four variables:
+The contact form needs these four variables on both backends:
 
 | Variable                | Purpose                                             |
 |--------------------------|------------------------------------------------------|
@@ -92,6 +141,14 @@ Both backends need the same four variables:
 | `SMTP_PASS`              | Gmail **App Password** (not your login password)     |
 | `MAIL_TO`                | Where contact-form messages are delivered            |
 | `TURNSTILE_SECRET_KEY`   | Cloudflare Turnstile secret (server-side)             |
+
+The assistant adds three optional ones:
+
+| Variable            | Purpose                                                        |
+|---------------------|----------------------------------------------------------------|
+| `ANTHROPIC_API_KEY` | Enables written answers. Unset = passage-quoting mode.         |
+| `CHAT_MODEL`        | Model override (default `claude-opus-5-5`)                     |
+| `CHAT_DAILY_LIMIT`  | Max generated answers per instance per day (default 300)       |
 
 **Production note:** Netlify does **not** read a committed `.env` file for
 deployed Functions — that file is only used by `netlify dev` locally. Set
