@@ -1,7 +1,7 @@
 /* ============================================================
    style.css — entry point for the redesigned design system.
    Import order matters: tokens → base → background → components
-   → layout → sections → animations → responsive.
+   → layout → sections → chat → animations → responsive.
    ============================================================ */
 
 @import url('tokens.css');
@@ -10,5 +10,6 @@
 @import url('components.css');
 @import url('layout.css');
 @import url('sections.css');
+@import url('chat.css');
 @import url('animations.css');
 @import url('responsive.css');
