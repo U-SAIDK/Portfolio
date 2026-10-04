@@ -392,3 +392,59 @@
   color: var(--muted);
   flex-shrink: 0;
 }
+
+/* ── Floating launcher ───────────────────────────────────── */
+/* Shown whenever the hero robot is off-screen or not rendered (small
+   viewports, reduced motion), so the assistant is reachable everywhere. */
+.chat-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 890;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--on-primary);
+  cursor: pointer;
+  box-shadow: 0 8px 28px var(--glow-primary), var(--shadow-2);
+  opacity: 0;
+  transform: translateY(16px) scale(0.8);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ease), transform 0.4s var(--spring), visibility 0s linear 0.4s, box-shadow 0.3s var(--ease);
+}
+
+.chat-fab.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 0.3s var(--ease), transform 0.4s var(--spring), visibility 0s, box-shadow 0.3s var(--ease);
+}
+
+.chat-fab.is-visible:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 14px 40px var(--glow-primary), var(--shadow-2);
+}
+
+/* Soft attention ring */
+.chat-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  opacity: 0;
+  animation: chatPulse 2.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes chatPulse {
+  0%   { opacity: 0.55; transform: scale(1); }
+  70%  { opacity: 0;    transform: scale(1.55); }
+  100% { opacity: 0;    transform: scale(1.55); }
+}
