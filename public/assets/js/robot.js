@@ -139,6 +139,36 @@
     }, { passive: true });
     document.addEventListener('mouseleave', function () { pointerInWindow = false; }, { passive: true });
     window.addEventListener('blur', function () { pointerInWindow = false; }, { passive: true });
+
+    /* ── studio environment ──────────────────────────────── */
+    // Glossy and metallic surfaces only look real if they have something
+    // to reflect. This builds a tiny virtual photo studio — a dim room
+    // with a few bright softboxes — and bakes it into a prefiltered
+    // environment map. No HDRI download; it costs one offscreen render.
+    try {
+      var pmrem = new T.PMREMGenerator(renderer);
+      var envScene = new T.Scene();
+      envScene.background = new T.Color(0x0b0d16);
+
+      var softbox = function (w, h, color, pos, lookAt) {
+        // toneMapped:false + values above 1 so the panels stay "brighter
+        // than white" in the HDR bake and produce crisp highlights.
+        var m = new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ color: color, side: T.DoubleSide, toneMapped: false }));
+        m.position.set(pos[0], pos[1], pos[2]);
+        m.lookAt(lookAt[0], lookAt[1], lookAt[2]);
+        envScene.add(m);
+      };
+      softbox(7, 7, new T.Color(3.4, 3.4, 3.6), [0, 7, 1], [0, 0, 0]);          // overhead key
+      softbox(3, 7, new T.Color(4.2, 3.9, 3.6), [-7, 2.5, 3], [0, 1, 0]);       // warm strip, camera left
+      softbox(2.5, 6, new T.Color(0.5, 2.6, 3.2), [7, 2, 2], [0, 1, 0]);        // cyan strip, camera right
+      softbox(8, 3, new T.Color(2.0, 1.5, 3.6), [0, 3, -7], [0, 1, 0]);         // violet rim, behind
+      softbox(9, 5, new T.Color(0.55, 0.6, 0.75), [0, 1, 8], [0, 1, 0]);        // broad dim front fill
+      softbox(14, 14, new T.Color(0.16, 0.17, 0.22), [0, -4, 0], [0, 0, 0]);    // floor bounce
+
+      scene.environment = pmrem.fromScene(envScene, 0.035).texture;
+      pmrem.dispose();
+      envScene.traverse(function (o) { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } });
+    } catch (_) { /* PMREM unsupported on this GPU/driver — materials fall back to direct lighting only */ }
     /* ── lights ──────────────────────────────────────────── */
     scene.add(new T.AmbientLight(0x1a1a2e, 3.5));
 
@@ -166,16 +196,6 @@
     var mViolet = new T.MeshStandardMaterial({ color: 0xfb7185, emissive: 0xfb7185, emissiveIntensity: 0.7, metalness: 0.2, roughness: 0.2 });
     var mEye = new T.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x22d3ee, emissiveIntensity: 4.0, roughness: 0.0, metalness: 0.0 });
     var mReact = new T.MeshStandardMaterial({ color: 0x34d399, emissive: 0x34d399, emissiveIntensity: 3.5, roughness: 0.0, metalness: 0.0 });
-
-    /* ── env map for reflections ─────────────────────────── */
-    try {
-      var pmrem = new T.PMREMGenerator(renderer);
-      pmrem.compileEquirectangularShader();
-      var envScene = new T.Scene();
-      envScene.background = new T.Color(0x0c0c20);
-      scene.environment = pmrem.fromScene(envScene).texture;
-      pmrem.dispose();
-    } catch (_) { /* PMREM unsupported on this GPU/driver — reflections just fall back to flat shading */ }
 
     /* ── robot root ──────────────────────────────────────── */
     var robot = new T.Group();
