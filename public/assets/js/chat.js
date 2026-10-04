@@ -191,4 +191,52 @@
   function clearSuggestions() {
     suggestionsEl.textContent = '';
   }
+
+  /* ── Transport: /api/chat ────────────────────────────────── */
+
+  // Same convention as contact-form.js: a plain static server on one of
+  // these ports can't resolve the /api/* redirect, so talk to the
+  // standalone Express server instead. Everywhere else (netlify dev,
+  // production) the API is same-origin.
+  var STANDALONE_STATIC_PORTS = ['5500', '5501', '3000', '8080'];
+  var API_BASE_URL = STANDALONE_STATIC_PORTS.indexOf(window.location.port) !== -1 ? 'http://localhost:5000' : '';
+
+  // Slightly above the function's own 10s ceiling, so a slow answer is
+  // the server's to time out and report, not the browser's to abandon.
+  var REQUEST_TIMEOUT_MS = 13000;
+  var MAX_HISTORY_TURNS = 6;
+
+  var history = []; // [{ role: 'user' | 'assistant', content }]
+
+  /**
+   * Resolves with { answer, sources, mode } for any response the server
+   * meant to send (including 4xx with a message, surfaced as `error`).
+   * Rejects only when the API is unreachable or broken, which is the
+   * caller's signal to use the local engine instead.
+   */
+  function askApi(question) {
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (controller) controller.abort(); }, REQUEST_TIMEOUT_MS);
+
+    return fetch(API_BASE_URL + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question, history: history.slice(-MAX_HISTORY_TURNS) }),
+      signal: controller ? controller.signal : undefined,
+    }).then(function (response) {
+      // A static host answers /api/chat with an HTML 404/200 page; only a
+      // JSON body counts as "the API responded".
+      var type = response.headers.get('content-type') || '';
+      if (type.indexOf('application/json') === -1) throw new Error('API unavailable (' + response.status + ')');
+
+      return response.json().then(function (data) {
+        if (response.ok && data && data.success && typeof data.answer === 'string') return data;
+        // Validation and rate-limit errors carry a message meant for the visitor.
+        if (response.status >= 400 && response.status < 500 && data && data.error) return { error: data.error };
+        throw new Error('API error (' + response.status + ')');
+      });
+    }).finally(function () {
+      clearTimeout(timer);
+    });
+  }
 })();
