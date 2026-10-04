@@ -103,7 +103,8 @@
     if (word.length < 4 || STEM_EXCEPTIONS[word] || /[0-9]/.test(word)) return word;
     if (/ies$/.test(word) && word.length > 4) return word.slice(0, -3) + 'y';
     if (/(sses|shes|ches|xes|zes)$/.test(word)) return word.slice(0, -2);
-    if (/s$/.test(word) && !/(ss|us|is)$/.test(word)) return word.slice(0, -1);
+    // "js" is excluded so normalised names (nextjs, nodejs) survive intact.
+    if (/s$/.test(word) && !/(ss|us|is|js)$/.test(word)) return word.slice(0, -1);
     if (/ing$/.test(word) && word.length > 5) return undouble(word.slice(0, -3));
     if (/ed$/.test(word) && word.length > 4 && !/eed$/.test(word)) return undouble(word.slice(0, -2));
     return word;
