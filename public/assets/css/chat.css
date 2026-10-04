@@ -545,3 +545,15 @@
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: 0.55; transform: scale(0.8); }
 }
+
+/* ── Custom-cursor integration ───────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor .chat-panel button,
+  html.has-cursor .chat-panel a,
+  html.has-cursor .chat-panel input,
+  html.has-cursor .chat-fab,
+  html.has-cursor .robot-bubble,
+  html.has-cursor .robot-hit {
+    cursor: none;
+  }
+}
