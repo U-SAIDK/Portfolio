@@ -304,6 +304,7 @@
   // questions land well above 3, unrelated ones ("capital of France")
   // score 0 because none of their terms exist in the corpus.
   var MIN_SCORE = 1.6;
+  var MIN_COVERAGE = 0.5;
 
   /**
    * Ranks chunks for a query.
@@ -347,7 +348,10 @@
       .sort(function (a, b) { return b.score - a.score || a.doc - b.doc; });
 
     var top = ranked[0];
-    var confident = !!top && top.score >= MIN_SCORE && typedMatched[top.doc] > 0;
+    // Coverage gate: when most of what the visitor typed doesn't exist
+    // anywhere in the corpus ("best pizza in naples" -> only "best" is
+    // known), one incidental match is not grounds to answer.
+    var confident = !!top && top.score >= MIN_SCORE && typedMatched[top.doc] > 0 && coverage >= MIN_COVERAGE;
 
     // Drop the long tail: anything under 35% of the best score is noise
     // that would only dilute the prompt.
