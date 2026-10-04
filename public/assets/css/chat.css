@@ -557,3 +557,48 @@
     cursor: none;
   }
 }
+
+/* ── Small screens: bottom sheet ─────────────────────────── */
+@media (max-width: 560px) {
+  .chat-panel {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+    height: min(72vh, 560px);
+    height: min(72dvh, 560px);
+    border-radius: var(--radius);
+    transform-origin: 50% 100%;
+    /* Blur is expensive on low-end mobile GPUs (see responsive.css);
+       a lighter radius over the more opaque glass keeps it legible. */
+    background: var(--glass-solid);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .chat-fab {
+    right: 16px;
+    bottom: 16px;
+    width: 52px;
+    height: 52px;
+  }
+
+  /* 16px stops iOS Safari zooming the page when the input is focused. */
+  .chat-input {
+    font-size: 16px;
+  }
+}
+
+/* Short landscape viewports: let the panel use the available height. */
+@media (max-height: 520px) {
+  .chat-panel {
+    height: calc(100vh - 24px);
+    height: calc(100dvh - 24px);
+    bottom: 12px;
+  }
+
+  .chat-note {
+    display: none;
+  }
+}
