@@ -133,3 +133,89 @@
   color: var(--text);
   transform: rotate(90deg);
 }
+
+/* ── Message log ─────────────────────────────────────────── */
+.chat-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hi) transparent;
+}
+
+.chat-msg {
+  max-width: 88%;
+  padding: 10px 13px;
+  border-radius: 16px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  animation: chatMsgIn 0.32s var(--ease) both;
+}
+
+.chat-msg.is-bot {
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 6px;
+  background: var(--surface-strong);
+  color: var(--text-2);
+}
+
+.chat-msg.is-user {
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hi));
+  color: var(--on-primary);
+  box-shadow: 0 4px 16px var(--glow-primary);
+}
+
+.chat-msg.is-error {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--text);
+}
+
+.chat-msg p + p,
+.chat-msg p + ul,
+.chat-msg ul + p {
+  margin-top: 8px;
+}
+
+.chat-msg ul {
+  padding-left: 16px;
+  list-style: disc;
+}
+
+.chat-msg li + li {
+  margin-top: 4px;
+}
+
+.chat-msg li::marker {
+  color: var(--primary);
+}
+
+.chat-msg strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chat-msg a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.chat-msg a:hover {
+  color: var(--secondary);
+}
+
+@keyframes chatMsgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
