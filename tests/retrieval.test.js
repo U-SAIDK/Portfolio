@@ -22,7 +22,7 @@ const CASES = [
   ['What cloud platforms does he use?', /^skills-cloud$/],
   ['testing experience?', /^skills-testing$/],
   ['What AI work has he done?', /^skills-ai$/],
-  ['What certifications does he have?', /^certifications-/],
+  ['What certifications does he have?', /^certifications-all$/],
   ['Where did he study?', /^education$/],
   ['What is his CGPA?', /^education$/],
   ['Is he available for hire?', /^availability$/],
