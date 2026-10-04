@@ -243,10 +243,6 @@
     var EYE_THINK = new T.Color(0xfbbf24);
     var EYE_SPEAK = new T.Color(0x5df2c0);
 
-    // Legacy materials still referenced by the not-yet-rebuilt body parts.
-    var mBlack = new T.MeshStandardMaterial({ color: 0x080810, metalness: 0.92, roughness: 0.07 });
-    var mDark = new T.MeshStandardMaterial({ color: 0x0f0f1e, metalness: 0.80, roughness: 0.18 });
-
     /* ── robot root ──────────────────────────────────────── */
     var robot = new T.Group();
     scene.add(robot);
@@ -577,17 +573,62 @@
       return lg;
     }
     robot.add(makeLeg(-1), makeLeg(1));
-    /* Ground contact shadow — scales/fades with bob height as a cheap
-       depth cue (a real projected shadow would need a receiving plane
-       and cost more, this reads convincingly at this widget's size). */
+
+    /* GROUND — three stacked cues that together sell "standing on
+       something": a real cast shadow from the key light, a soft contact
+       blob directly under the feet (ambient occlusion the shadow map
+       can't provide), and a faint projector ring. */
+    var GROUND_Y = -0.93;
+
+    var shadowCatcher = new T.Mesh(new T.PlaneGeometry(7, 7), new T.ShadowMaterial({ opacity: 0.26 }));
+    shadowCatcher.rotation.x = -PI / 2;
+    shadowCatcher.position.y = GROUND_Y;
+    shadowCatcher.receiveShadow = true;
+    scene.add(shadowCatcher);
+
+    function radialTexture(stops) {
+      var c = document.createElement('canvas');
+      c.width = c.height = 128;
+      var ctx = c.getContext('2d');
+      var grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      stops.forEach(function (s) { grad.addColorStop(s[0], s[1]); });
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 128, 128);
+      var tex = new T.CanvasTexture(c);
+      tex.colorSpace = T.SRGBColorSpace;
+      return tex;
+    }
+
     var shadowDisc = new T.Mesh(
-      new T.CircleGeometry(0.70, 32),
-      new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false })
+      new T.PlaneGeometry(2.1, 2.1),
+      new T.MeshBasicMaterial({
+        map: radialTexture([[0, 'rgba(0,0,0,0.55)'], [0.45, 'rgba(0,0,0,0.22)'], [1, 'rgba(0,0,0,0)']]),
+        transparent: true, opacity: 0.6, depthWrite: false,
+      })
     );
     shadowDisc.rotation.x = -PI / 2;
-    shadowDisc.position.y = -0.82;
-    robot.add(shadowDisc);
+    shadowDisc.scale.y = 0.62; // shallower front-to-back: feet are side by side
+    shadowDisc.position.y = GROUND_Y + 0.004;
+    scene.add(shadowDisc);
 
+    var padRing = new T.Mesh(
+      new T.RingGeometry(0.86, 0.885, 96),
+      new T.MeshBasicMaterial({ color: 0x4be3ff, transparent: true, opacity: 0.4, toneMapped: false, depthWrite: false, side: T.DoubleSide })
+    );
+    padRing.rotation.x = -PI / 2;
+    padRing.position.y = GROUND_Y + 0.006;
+    scene.add(padRing);
+
+    var padGlow = new T.Mesh(
+      new T.PlaneGeometry(2.6, 2.6),
+      new T.MeshBasicMaterial({
+        map: radialTexture([[0, 'rgba(75,227,255,0)'], [0.55, 'rgba(75,227,255,0.10)'], [0.68, 'rgba(124,108,247,0.20)'], [0.8, 'rgba(124,108,247,0)'], [1, 'rgba(0,0,0,0)']]),
+        transparent: true, opacity: 0.9, depthWrite: false, toneMapped: false,
+      })
+    );
+    padGlow.rotation.x = -PI / 2;
+    padGlow.position.y = GROUND_Y + 0.002;
+    scene.add(padGlow);
     /* ── animation state ─────────────────────────────────── */
     var hRot = { x: 0, y: 0 };
     var tRot = { x: 0, y: 0 };
