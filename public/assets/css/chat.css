@@ -243,3 +243,42 @@
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
   30%           { opacity: 1;   transform: translateY(-4px); }
 }
+
+/* ── Source chips (under a bot answer) ───────────────────── */
+.chat-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--border-hi);
+}
+
+.chat-sources-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chat-msg a.chat-source {
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--primary-soft);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--primary);
+  text-decoration: none;
+  word-break: normal;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.chat-msg a.chat-source:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft-2);
+  color: var(--primary);
+}
