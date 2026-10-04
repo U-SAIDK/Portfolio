@@ -1,8 +1,9 @@
 # Usaid Khan — Portfolio
 
-Personal portfolio site: a static frontend (`public/`) plus a contact-form
-backend that runs as a Netlify Function in production, or a small Express
-server for local development without the Netlify CLI.
+Personal portfolio site: a static frontend (`public/`) plus a small backend
+(contact form and the robot assistant) that runs as Netlify Functions in
+production, or as an Express server for local development without the
+Netlify CLI.
 
 ## Structure
 
@@ -23,14 +24,27 @@ public/                    Static site — Netlify's publish directory
       contact-form.js       Contact form validation + submission
       turnstile-init.js     Cloudflare Turnstile widget bootstrap
       robot.js              Hero Three.js robot widget (lazy-loaded)
+      chat.js               Assistant panel opened from the robot
+      rag-engine.js         Retrieval engine (shared with the backend)
+    data/knowledge.json     Generated corpus — do not edit by hand
+
+knowledge/                 Source documents for the assistant (one chunk each)
+scripts/build-knowledge.js Compiles knowledge/*.md -> knowledge.json
+tests/                     node:test suite (retrieval, handler, prompt)
 
 netlify/functions/contact.js   Production contact-form endpoint
+netlify/functions/chat.js      Production assistant endpoint (/api/chat)
 server/                        Standalone Express server (local dev only)
   server.js
   package.json / .env.example
 shared/contact-handler.js      Validation + Turnstile + email logic shared
                                 by both of the above — this is the one
                                 place contact-form behaviour is defined.
+shared/chat-handler.js         Assistant logic: validate, rate-limit,
+                                retrieve, generate (or quote passages)
+shared/chat-prompt.js          System prompt + message construction
+shared/chat-llm.js             Claude API call for the generation step
+shared/rate-limit.js           In-memory sliding-window limiter
 
 netlify.toml                   Build/publish config + /api/* redirect
 .env.example                   Template for `netlify dev` (root)
