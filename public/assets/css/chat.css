@@ -547,6 +547,20 @@
   50%      { opacity: 0.55; transform: scale(0.8); }
 }
 
+/* On wide screens the robot steps aside when the panel opens, so it
+   stands next to the conversation (waving, thinking, speaking) instead
+   of being covered by it. Below this width there's no free space
+   between the hero text and the panel, so it stays put and peeks over. */
+@media (min-width: 1440px) {
+  #robot-widget {
+    transition: transform 0.6s var(--ease);
+  }
+
+  .chat-open #robot-widget {
+    transform: translateY(-50%) translateX(-320px);
+  }
+}
+
 /* ── Custom-cursor integration ───────────────────────────── */
 @media (hover: hover) and (pointer: fine) {
   html.has-cursor .chat-panel button,
